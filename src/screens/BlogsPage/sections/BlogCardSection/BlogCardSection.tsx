@@ -1,4 +1,4 @@
-import { BookmarkIcon, HeartIcon } from "lucide-react";
+import { BookmarkIcon, HeartIcon, PlusIcon } from "lucide-react"; // Added PlusIcon
 import React from "react";
 import {
   Avatar,
@@ -66,118 +66,134 @@ export const BlogCardSection = (): JSX.Element => {
         avatar: "/avatar-11.png",
         date: "December 15, 2024",
       },
-      commentIcon: "/group-86-8.png",
+      commentIcon: "/group-86-8.png", // Assuming this is the correct icon path
     },
   ];
 
   return (
-    <section className="w-full flex flex-wrap justify-between gap-4 py-8">
+    // Responsive grid layout, padding, gap
+    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 w-full px-4 sm:px-8 md:px-12 lg:px-20 py-8">
       {blogCards.map((card) => (
         <Card
           key={card.id}
-          className="w-full md:w-[418px] border-[#a8c8e1] shadow-[-1px_-1px_4px_#003b9533,2px_2px_4px_#003b9533] rounded-2xl overflow-hidden"
+          // Removed fixed width, added overflow-hidden
+          className="flex flex-col border border-[#a8c8e1] shadow-[-1px_-1px_4px_#003b9533,2px_2px_4px_#003b9533] rounded-2xl overflow-hidden"
         >
-          <CardHeader className="p-4 pt-5 pb-0 space-y-2 h-[116px]">
-            <h2 className="font-bold text-xl text-[#0f1419]">{card.title}</h2>
+          {/* Responsive padding, removed fixed height */}
+          <CardHeader className="flex flex-col items-start gap-2 p-3 sm:p-4">
+            {/* Responsive text size */}
+            <h2 className="self-stretch font-bold text-[#0f1419] text-lg sm:text-xl">
+              {card.title}
+            </h2>
 
-            <div className="flex items-center gap-1.5">
+            {/* Badges wrap naturally */}
+            <div className="flex flex-wrap items-center gap-1.5">
               {card.categories.map((category, index) => (
                 <Badge
                   key={index}
-                  className="bg-[#003b95] text-white rounded-full px-3 py-[3px] h-6 font-normal text-xs"
+                  // Responsive padding/text, removed fixed height
+                  className="px-2.5 py-1 bg-[#003b95] text-white rounded-full font-normal text-xs sm:text-sm"
                 >
                   {category}
                 </Badge>
               ))}
             </div>
 
-            <p className="text-base text-[#0f1419]">{card.subtitle}</p>
+            {/* Responsive text size */}
+            <p className="self-stretch font-normal text-[#0f1419] text-sm sm:text-base">
+              {card.subtitle}
+            </p>
           </CardHeader>
 
-          <CardContent className="p-0">
-            <div className="bg-[#c4e0ee] rounded-2xl p-[21px] mx-4 mt-2">
-              <p className="text-sm text-[#536471]">
+          {/* Added padding to CardContent */}
+          <CardContent className="flex flex-col gap-3 sm:gap-4 p-3 sm:p-4 pt-0">
+            {/* Description block: responsive padding */}
+            <div className="p-3 sm:p-4 bg-[#c4e0ee] rounded-lg">
+              {/* Responsive text size, added line-clamp */}
+              <div className="font-normal text-sm text-[#536471] line-clamp-3">
                 {card.description}
-                <br />
-                <span className="font-light text-[#003b95] underline cursor-pointer">
-                  Read more
-                </span>
-              </p>
+              </div>
+              {/* Changed span to anchor */}
+              <a href="#" className="font-light text-[#003b95] underline cursor-pointer text-sm mt-1 inline-block">
+                Read more
+              </a>
             </div>
 
-            <div className="flex justify-between px-4 py-2">
-              <div className="flex items-center gap-6">
-                <div className="flex items-center gap-2">
-                  <HeartIcon className="w-6 h-6" />
-                  <span className="text-xs font-medium text-[#536471]">
+            {/* Stats section: responsive padding/gap */}
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
+                {/* Likes */}
+                <div className="flex items-center gap-1.5">
+                  <HeartIcon className="w-5 h-5 text-red-500" /> {/* Adjusted size/color */}
+                  <span className="font-medium text-[#536471] text-xs sm:text-sm">
                     {card.likes}
                   </span>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-[20.11px] h-3.5 bg-[100%_100%]"
-                    style={{ backgroundImage: `url(${card.commentIcon})` }}
+                {/* Comments */}
+                <div className="flex items-center gap-1.5">
+                  <img // Changed div with background to img
+                    className="w-4 h-4 sm:w-5 sm:h-5 object-contain" // Adjusted size
+                    src={card.commentIcon}
+                    alt="Comments icon"
                   />
-                  <span className="text-xs font-medium text-[#536471]">
+                  <span className="font-medium text-[#536471] text-xs sm:text-sm">
                     {card.comments}
                   </span>
                 </div>
               </div>
-
-              <div>
-                <BookmarkIcon className="w-6 h-6" />
+              {/* Bookmark */}
+              <div className="flex items-center">
+                <BookmarkIcon className="w-5 h-5 text-gray-500" /> {/* Adjusted size/color */}
               </div>
             </div>
 
-            <div className="w-full h-[120px] overflow-hidden flex">
-              {card.images.map((image, index) => (
-                <div
-                  key={index}
-                  className={`h-[120px] ${
-                    index === 0
-                      ? "w-[140px]"
-                      : index === 1
-                        ? "w-[177px]"
-                        : "w-[163px]"
-                  }`}
-                >
-                  <img
-                    src={image}
-                    alt="Blog image"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
+            {/* Image section: responsive height, flex layout */}
+            <div className="w-full h-28 sm:h-32 overflow-hidden rounded-lg"> {/* Responsive height */}
+              <div className="flex items-center gap-1 h-full"> {/* Use gap, ensure full height */}
+                {card.images.map((image, index) => (
+                  <div
+                    key={index}
+                    // Use flex-1 for distribution, remove fixed widths
+                    className="flex-1 h-full"
+                  >
+                    <img
+                      className="w-full h-full object-cover" // Ensure image covers container
+                      alt={`Blog image ${index + 1}`}
+                      src={image}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </CardContent>
 
-          <CardFooter className="flex items-center gap-2 p-4 h-[82px]">
+          {/* Footer: responsive padding, removed fixed height */}
+          <CardFooter className="flex items-center gap-2 p-3 sm:p-4 mt-auto bg-gray-50 rounded-b-2xl"> {/* Added mt-auto and bg color */}
             <div className="flex items-center gap-2 flex-1">
-              <Avatar className="w-10 h-10">
+              <Avatar className="w-8 h-8 sm:w-10 sm:h-10"> {/* Responsive avatar */}
                 <AvatarImage src={card.author.avatar} alt={card.author.name} />
-                <AvatarFallback>{card.author.name.charAt(0)}</AvatarFallback>
+                <AvatarFallback>
+                  {card.author.name.split(" ").map(n => n[0]).join("")} {/* Better fallback */}
+                </AvatarFallback>
               </Avatar>
 
-              <div className="flex flex-col gap-0.5 flex-1">
-                <span className="font-bold text-base text-[#0f1419]">
+              {/* Simplified author info, responsive text */}
+              <div className="flex flex-col items-start flex-1">
+                <div className="font-bold text-[#0f1419] text-sm sm:text-base self-stretch line-clamp-1"> {/* Added line-clamp */}
                   {card.author.name}
-                </span>
-                <span className="text-xs text-[#536471]">
-                  Published on: {card.author.date}
-                </span>
+                </div>
+                <div className="text-[#536471] text-xs sm:text-sm self-stretch">
+                  {card.author.date} {/* Simplified date display */}
+                </div>
               </div>
 
+              {/* Responsive button, using PlusIcon */}
               <Button
-                className="bg-[#003b95] text-white rounded-full h-6 px-3 py-[3px] flex items-center gap-[5px]"
-                size="sm"
+                className="flex items-center justify-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-[#003b95] rounded-full text-white text-xs sm:text-sm font-normal"
+                size="sm" // Keep size sm for smaller button
               >
-                <span className="text-xs font-normal">Follow</span>
-                <img
-                  className="w-3 h-3"
-                  alt="Follow icon"
-                  src={`/group-87-${card.id + 5}.png`}
-                />
+                Follow
+                <PlusIcon className="w-3 h-3" /> {/* Use PlusIcon */}
               </Button>
             </div>
           </CardFooter>
