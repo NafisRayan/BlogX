@@ -1,4 +1,4 @@
-import { ChevronDownIcon, RotateCcwIcon } from "lucide-react";
+import { ChevronDownIcon, RotateCcwIcon, SlidersHorizontal } from "lucide-react";
 import React from "react";
 import { Button } from "../../../../components/ui/button";
 import {
@@ -40,8 +40,11 @@ export const BlogContainerSection = (): JSX.Element => {
         <Button
           className="flex items-center justify-between gap-2 flex-1 h-10 sm:h-11 bg-[#d9f2f7] border border-[#a8c8e1] rounded-[5px] text-base sm:text-lg font-normal text-black px-3 sm:px-4 min-w-[100px]" // Added min-width
         >
+          
           <span>Sort by</span>
-          <ChevronDownIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+
+          <SlidersHorizontal className="h-4 w-4 sm:h-5 sm:w-5 mr-2" /> {/* Added icon */}
+          {/* <ChevronDownIcon className="h-4 w-4 sm:h-5 sm:w-5" /> */}
         </Button>
 
         {/* Responsive height, padding, text size. Removed variant, fixed width, font family. */}
