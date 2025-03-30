@@ -1,18 +1,23 @@
-import { StrictMode, useState } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { BlogsPage } from "./screens/BlogsPage/BlogsPage";
 import BlogForm from "./screens/BlogForm/BlogForm";
 
 const App = () => {
-  const [currentPage, setCurrentPage] = useState("blogs");
+  // Removed currentPage state
 
   return (
     <StrictMode>
-      <div>
-        {/* <button onClick={() => setCurrentPage("blogs")}>Blogs</button>
-        <button onClick={() => setCurrentPage("blogForm")}>Blog Form</button> */}
-        {currentPage === "blogs" ? <BlogsPage setCurrentPage={setCurrentPage} /> : <BlogForm />}
-      </div>
+      <BrowserRouter>
+        <Routes>
+          {/* Define routes */}
+          <Route path="/blogs" element={<BlogsPage />} />
+          <Route path="/blog-form" element={<BlogForm />} />
+          {/* Default route */}
+          <Route path="/" element={<BlogsPage />} />
+        </Routes>
+      </BrowserRouter>
     </StrictMode>
   );
 };

@@ -1,6 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../../components/ui/button';
 
 const BlogForm = () => {
+  const navigate = useNavigate();
+
+  const handleBackToBlogs = () => {
+    navigate('/blogs'); // Assuming '/blogs' is the route for the main blog page
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-black text-3xl font-semibold font-['Inter'] text-shadow">
@@ -101,6 +109,12 @@ const BlogForm = () => {
         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           Publish
         </button>
+      </div>
+      {/* Add Back to Blogs button */}
+      <div className="mt-4 flex justify-center">
+        <Button variant="outline" onClick={handleBackToBlogs}>
+          Back to Blogs
+        </Button>
       </div>
     </div>
   );

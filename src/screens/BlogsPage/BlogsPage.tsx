@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import {
   Pagination,
@@ -15,7 +16,9 @@ import { BlogHeaderSection } from "./sections/BlogHeaderSection";
 import { BlogPaginationSection } from "./sections/BlogPaginationSection";
 import { BlogPostSection } from "./sections/BlogPostSection";
 
-export const BlogsPage = ({ setCurrentPage }: { setCurrentPage: (page: string) => void }): JSX.Element => {
+export const BlogsPage = (): JSX.Element => {
+  const navigate = useNavigate();
+
   // Pagination data
   const paginationItems = [
     { page: 1, active: true },
@@ -44,9 +47,9 @@ export const BlogsPage = ({ setCurrentPage }: { setCurrentPage: (page: string) =
 
         {/* Post Blog Button and Pagination */}
         <div className="flex justify-between items-center mx-20 mt-8">
-          <Button 
+          <Button
             className="bg-[#003b95] text-white rounded-lg h-[46px] w-[213px]"
-            onClick={() => setCurrentPage("blogForm")}
+            onClick={() => navigate('/blog-form')} // Use navigate here
           >
             <span className="font-normal text-xl [font-family:'Inter',Helvetica]">
               Post your blog
