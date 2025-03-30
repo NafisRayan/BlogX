@@ -9,9 +9,9 @@ const App = () => {
   return (
     <StrictMode>
       <div>
-        <button onClick={() => setCurrentPage("blogs")}>Blogs</button>
-        <button onClick={() => setCurrentPage("blogForm")}>Blog Form</button>
-        {currentPage === "blogs" ? <BlogsPage /> : <BlogForm />}
+        {/* <button onClick={() => setCurrentPage("blogs")}>Blogs</button>
+        <button onClick={() => setCurrentPage("blogForm")}>Blog Form</button> */}
+        {currentPage === "blogs" ? <BlogsPage setCurrentPage={setCurrentPage} /> : <BlogForm />}
       </div>
     </StrictMode>
   );

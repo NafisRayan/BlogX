@@ -15,7 +15,7 @@ import { BlogHeaderSection } from "./sections/BlogHeaderSection";
 import { BlogPaginationSection } from "./sections/BlogPaginationSection";
 import { BlogPostSection } from "./sections/BlogPostSection";
 
-export const BlogsPage = (): JSX.Element => {
+export const BlogsPage = ({ setCurrentPage }: { setCurrentPage: (page: string) => void }): JSX.Element => {
   // Pagination data
   const paginationItems = [
     { page: 1, active: true },
@@ -44,7 +44,10 @@ export const BlogsPage = (): JSX.Element => {
 
         {/* Post Blog Button and Pagination */}
         <div className="flex justify-between items-center mx-20 mt-8">
-          <Button className="bg-[#003b95] text-white rounded-lg h-[46px] w-[213px]">
+          <Button 
+            className="bg-[#003b95] text-white rounded-lg h-[46px] w-[213px]"
+            onClick={() => setCurrentPage("blogForm")}
+          >
             <span className="font-normal text-xl [font-family:'Inter',Helvetica]">
               Post your blog
             </span>
