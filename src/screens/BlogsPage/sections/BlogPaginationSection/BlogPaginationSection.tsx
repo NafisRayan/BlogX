@@ -7,56 +7,51 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "../../../../components/ui/pagination"; // Adjusted import path
+} from "../../../../components/ui/pagination";
 
-// Define the structure of a pagination item
 interface PaginationItemData {
   page: number;
   active: boolean;
 }
 
-// Define the props for the component
 interface BlogPaginationSectionProps {
   paginationItems: PaginationItemData[];
-  // Add other props like onPageChange handler if needed later
 }
 
 export const BlogPaginationSection = ({ paginationItems }: BlogPaginationSectionProps): JSX.Element => {
   return (
-    <Pagination>
-      <PaginationContent>
+    <Pagination className="w-full sm:w-auto">
+      <PaginationContent className="flex items-center justify-center sm:justify-end gap-3">
         <PaginationItem>
           <PaginationPrevious
-            // Consider making these interactive later
-            className="bg-[#e0f7fa] border-[#a8c8e1] w-10 h-10 rounded-md border border-solid flex items-center justify-center cursor-not-allowed" // Removed opacity-30, changed rounded to rounded-md
+            className="bg-[#e0f7fa] border-[#a8c8e1] w-9 h-9 sm:w-10 sm:h-10 rounded-md border border-solid flex items-center justify-center hover:bg-gray-100 transition-colors pl-0 pr-0"
             href="#"
-            aria-disabled="true" // Accessibility improvement
-          />
+          >
+            <span className="sr-only">Previous</span>
+          </PaginationPrevious>
         </PaginationItem>
 
-        {/* Added flex-wrap for pagination items on smaller screens */}
-        <div className="flex flex-wrap gap-1">
+        <div className="flex items-center gap-3">
           {paginationItems.map((item, index) => (
             <React.Fragment key={index}>
               <PaginationItem>
                 <PaginationLink
-                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-md border border-solid flex items-center justify-center font-semibold text-sm sm:text-base ${ // Changed rounded to rounded-md
+                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-md border border-solid flex items-center justify-center font-semibold text-sm sm:text-base ${
                     item.active
-                      ? "bg-[#d2ecf4] border-[#003b95] text-[#003b95] cursor-default" // Added cursor style
-                      : "bg-[#e0f7fa] border-[#a8c8e1] text-black hover:bg-gray-100" // Added hover state
+                      ? "bg-[#d2ecf4] border-[#003b95] text-[#003b95] cursor-default"
+                      : "bg-[#e0f7fa] border-[#a8c8e1] text-black hover:bg-gray-100 transition-colors"
                   }`}
-                  href="#" // Should ideally link to actual pages or trigger page change
+                  href="#"
                   isActive={item.active}
-                  aria-current={item.active ? "page" : undefined} // Accessibility improvement
+                  aria-current={item.active ? "page" : undefined}
                 >
                   {item.page}
                 </PaginationLink>
               </PaginationItem>
 
-              {/* Render ellipsis conditionally based on logic (hardcoded for now) */}
-              {index === 2 && paginationItems.length > 3 && ( // Added check for length
+              {index === 2 && paginationItems.length > 3 && (
                 <PaginationItem>
-                  <PaginationEllipsis className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center font-semibold text-sm sm:text-base" />
+                  <PaginationEllipsis className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-sm sm:text-base" />
                 </PaginationItem>
               )}
             </React.Fragment>
@@ -65,10 +60,11 @@ export const BlogPaginationSection = ({ paginationItems }: BlogPaginationSection
 
         <PaginationItem>
           <PaginationNext
-            // Consider making these interactive later
-            className="bg-[#e0f7fa] border-[#a8c8e1] w-9 h-9 sm:w-10 sm:h-10 rounded-md border border-solid flex items-center justify-center hover:bg-gray-100" // Changed rounded to rounded-md
+            className="bg-[#e0f7fa] border-[#a8c8e1] w-9 h-9 sm:w-10 sm:h-10 rounded-md border border-solid flex items-center justify-center hover:bg-gray-100 transition-colors pl-0 pr-0"
             href="#"
-          />
+          >
+            <span className="sr-only">Next</span>
+          </PaginationNext>
         </PaginationItem>
       </PaginationContent>
     </Pagination>

@@ -45,7 +45,7 @@ export const BlogsPage = (): JSX.Element => {
 
         {/* Post Blog Button and Pagination */}
         {/* Responsive margins, flex-wrap for small screens */}
-        <div className="flex flex-wrap justify-between items-center gap-4 mx-4 sm:mx-8 md:mx-12 lg:mx-20 mt-8">
+        <div className="flex flex-wrap justify-between items-center gap-6 mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-12">
           <Button
             className="bg-[#003b95] text-white rounded-lg px-6 py-2.5 text-lg sm:text-xl w-full sm:w-auto" // Responsive padding, text size, and width
             onClick={() => navigate('/blog-form')} // Use navigate here
