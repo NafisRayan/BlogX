@@ -7,14 +7,13 @@ import {
   PaginationEllipsis,
   PaginationItem,
   PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
+  // Removed direct Pagination imports, they are now in BlogPaginationSection
 } from "../../components/ui/pagination";
 import { BlogCardSection } from "./sections/BlogCardSection";
 import { BlogContainerSection } from "./sections/BlogContainerSection";
 import { BlogHeaderSection } from "./sections/BlogHeaderSection";
-import { BlogPaginationSection } from "./sections/BlogPaginationSection";
 import { BlogPostSection } from "./sections/BlogPostSection";
+import { BlogPaginationSection } from "./sections/BlogPaginationSection"; // Import the new component
 
 export const BlogsPage = (): JSX.Element => {
   const navigate = useNavigate();
@@ -28,8 +27,8 @@ export const BlogsPage = (): JSX.Element => {
   ];
 
   return (
-    <main className="bg-[#e0f7fa] flex flex-row justify-center w-full">
-      <div className="bg-[#e0f7fa] w-full max-w-[1512px] relative">
+    <main className="bg-[#e0f7fa] flex flex-row justify-center w-full min-h-screen">
+      <div className="w-full max-w-[1512px] relative pb-8"> {/* Removed redundant bg, Added padding-bottom */}
         {/* Blog Header Section */}
         <BlogHeaderSection />
 
@@ -42,61 +41,21 @@ export const BlogsPage = (): JSX.Element => {
         {/* Blog Card Section */}
         <BlogCardSection />
 
-        {/* Blog Pagination Section */}
-        <BlogPaginationSection />
+        {/* Removed incorrect BlogPaginationSection usage */}
 
         {/* Post Blog Button and Pagination */}
-        <div className="flex justify-between items-center mx-20 mt-8">
+        {/* Responsive margins, flex-wrap for small screens */}
+        <div className="flex flex-wrap justify-between items-center gap-6 mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-12">
           <Button
-            className="bg-[#003b95] text-white rounded-lg h-[46px] w-[213px]"
+            className="bg-[#003b95] text-white rounded-lg px-6 py-2.5 text-lg sm:text-xl w-full sm:w-auto" // Responsive padding, text size, and width
             onClick={() => navigate('/blog-form')} // Use navigate here
           >
-            <span className="font-normal text-xl [font-family:'Inter',Helvetica]">
-              Post your blog
-            </span>
+            Post your blog {/* Removed span and specific font family */}
           </Button>
 
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  className="bg-[#e0f7fa] border-[#a8c8e1] opacity-30 w-10 h-10 rounded border border-solid flex items-center justify-center"
-                  href="#"
-                />
-              </PaginationItem>
+          {/* Use the new BlogPaginationSection component */}
+          <BlogPaginationSection paginationItems={paginationItems} />
 
-              {paginationItems.map((item, index) => (
-                <React.Fragment key={index}>
-                  <PaginationItem>
-                    <PaginationLink
-                      className={`w-10 h-10 rounded border border-solid flex items-center justify-center font-semibold text-base ${
-                        item.active
-                          ? "bg-[#d2ecf4] border-[#003b95] text-[#003b95]"
-                          : "bg-[#e0f7fa] border-[#a8c8e1] text-black"
-                      }`}
-                      href="#"
-                      isActive={item.active}
-                    >
-                      {item.page}
-                    </PaginationLink>
-                  </PaginationItem>
-
-                  {index === 2 && (
-                    <PaginationItem>
-                      <PaginationEllipsis className="w-10 h-10 flex items-center justify-center font-semibold text-base" />
-                    </PaginationItem>
-                  )}
-                </React.Fragment>
-              ))}
-
-              <PaginationItem>
-                <PaginationNext
-                  className="bg-[#e0f7fa] border-[#a8c8e1] w-10 h-10 rounded border border-solid flex items-center justify-center"
-                  href="#"
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
         </div>
       </div>
     </main>

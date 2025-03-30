@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { BlogsPage } from "./screens/BlogsPage/BlogsPage";
-import BlogForm from "./screens/BlogForm/BlogForm";
+import { BlogForm } from "./screens/BlogForm/BlogForm"; // Changed to named import
 
 const App = () => {
   // Removed currentPage state
