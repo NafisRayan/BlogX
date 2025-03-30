@@ -1,136 +1,148 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // Added back
 import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input"; // Import Input component
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"; // Import Select components
-// Removed Textarea import
+import { Input } from "../../components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 
-export const BlogForm = () => { // Changed to named export
-  const navigate = useNavigate();
+export const BlogForm = () => {
+  const navigate = useNavigate(); // Added back
 
+  // Added back
   const handleBackToBlogs = () => {
-    navigate('/blogs'); // Assuming '/blogs' is the route for the main blog page
+    navigate('/blogs');
   };
 
-  // Helper function for label classes
-  const labelClasses = "block text-black text-base sm:text-lg font-medium mb-1"; // Responsive text, adjusted weight/margin
-
-  // Helper function for input/select/textarea classes (using components now)
-  const inputBaseClasses = "mt-1 block w-full"; // Simplified base
+  // Adjusted classes based on the image
+  const labelClasses = "text-black text-lg sm:text-xl font-normal flex items-center justify-start"; // Adjusted for alignment
+  const inputBaseClasses = "bg-[#d2ecf4] border border-gray-300 w-full text-gray-600 text-base sm:text-lg rounded-lg focus-visible:ring-1 focus-visible:ring-[#003b95] h-11 px-4"; // Adjusted styling
+  const selectClasses = "bg-[#d2ecf4] border border-gray-300 text-gray-600 text-base sm:text-lg rounded-lg h-11"; // Adjusted styling
 
   return (
-    // Added max-width for better control on larger screens, more padding
-    <div className="container mx-auto p-4 sm:p-6 md:p-8 max-w-3xl">
-      {/* Removed text-shadow, font-['Inter'] */}
-      <h1 className="text-black text-2xl sm:text-3xl font-semibold mb-6">
-        Blog Form
-      </h1>
+    <main className="bg-[#e0f7fa] flex flex-col items-center w-full min-h-screen py-8 px-4">
+      <div className="w-full max-w-[1000px]"> {/* Adjusted max-width for better centering */}
+        <h1 className="text-[32px] font-bold mb-10 text-left"> {/* Adjusted font weight and alignment */}
+          Blog Form
+        </h1>
 
-      {/* Form fields */}
-      <div className="space-y-4">
-        <div>
-          <label className={labelClasses}>Author Name:</label>
-          <Input type="text" className={inputBaseClasses} />
-        </div>
-        <div>
-          <label className={labelClasses}>Blog Title:</label>
-          <Input
-            type="text"
-            placeholder="Enter the title of your blog post"
-            className={inputBaseClasses}
-          />
-        </div>
-        <div>
-          <label className={labelClasses}>Category:</label>
-          <Select>
-            <SelectTrigger className={inputBaseClasses}>
-              <SelectValue placeholder="-Select category-" />
-            </SelectTrigger>
-            <SelectContent>
-              {/* Add actual options here */}
-              <SelectItem value="travel">Travel</SelectItem>
-              <SelectItem value="tech">Technology</SelectItem>
-              <SelectItem value="food">Food</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <label className={labelClasses}>Sub-category:</label>
-           <Select>
-            <SelectTrigger className={inputBaseClasses}>
-              <SelectValue placeholder="-Select sub-category-" />
-            </SelectTrigger>
-            <SelectContent>
-              {/* Add actual options here */}
-              <SelectItem value="hiking">Hiking</SelectItem>
-              <SelectItem value="webdev">Web Development</SelectItem>
-              <SelectItem value="recipes">Recipes</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <label className={labelClasses}>Summary:</label>
-          <Input
-            type="text"
-            placeholder="Type here"
-            className={inputBaseClasses}
-          />
-        </div>
-        <div>
-          <label className={labelClasses}>Publication Date:</label>
-          <Input
-            type="date" // Changed to date type for better UX
-            placeholder="DD/MM/YYYY"
-            className={inputBaseClasses}
-          />
-        </div>
-        <div>
-          <label className={labelClasses}>Travel tags:</label>
-           <Select> {/* Assuming tags might be selectable */}
-            <SelectTrigger className={inputBaseClasses}>
-              <SelectValue placeholder="-Select tags-" />
-            </SelectTrigger>
-            <SelectContent>
-              {/* Add actual options here */}
-              <SelectItem value="alps">Alps</SelectItem>
-              <SelectItem value="beach">Beach</SelectItem>
-              <SelectItem value="city">City Break</SelectItem>
-            </SelectContent>
-          </Select>
-          {/* Or use an Input for free-form tags:
-           <Input type="text" placeholder="Comma-separated tags" className={inputBaseClasses} />
-          */}
-        </div>
-        <div>
-          <label className={labelClasses}>Main Content:</label>
-          {/* Reverted back to standard textarea */}
-          <textarea
-            placeholder="Write your blog content here"
-            className={`${inputBaseClasses} border rounded py-2 px-3 text-neutral-400 text-lg font-normal leading-tight focus:outline-none focus:shadow-outline min-h-[150px]`} // Re-added original styles + min-height
-            rows={5}
-          />
-        </div>
-        <div>
-          <label className={labelClasses}>Images Upload:</label>
-          {/* Basic file input - replace with a proper uploader component later */}
-          <Input type="file" multiple className={`${inputBaseClasses} border p-2 h-auto`} />
-          {/* Placeholder div removed */}
+        {/* Removed the white background container to match the image's simpler layout */}
+        <div className="space-y-6"> {/* Adjusted spacing */}
+          {/* Row 1: Author Name (Label Only) */}
+          <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr] gap-x-8 gap-y-4 items-center"> {/* Custom grid for label alignment */}
+             <label className={labelClasses}>Author Name:</label>
+             {/* Input removed as per image */}
+             <div></div> {/* Placeholder for grid structure */}
+          </div>
+
+          {/* Row 2: Blog Title & Publication Date */}
+          <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr_max-content_1fr] gap-x-8 gap-y-4 items-center"> {/* Custom grid for label alignment */}
+            <label className={labelClasses}>Blog Title :</label>
+            <Input
+              type="text"
+              placeholder="Enter the title of your blog post"
+              className={inputBaseClasses}
+            />
+            <label className={labelClasses}>Publication Date:</label>
+            <Input
+              type="text"
+              placeholder="DD/MM/YYYY"
+              className={inputBaseClasses}
+            />
+          </div>
+
+          {/* Row 3: Category & Sub-category */}
+          <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr_max-content_1fr] gap-x-8 gap-y-4 items-center"> {/* Custom grid for label alignment */}
+            <label className={labelClasses}>Category :</label>
+            <Select>
+              <SelectTrigger className={selectClasses}>
+                <SelectValue placeholder="-Select other options-" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="travel">Travel</SelectItem>
+                <SelectItem value="tech">Technology</SelectItem>
+                <SelectItem value="food">Food</SelectItem>
+              </SelectContent>
+            </Select>
+            <label className={labelClasses}>Sub-category :</label>
+            <Select>
+              <SelectTrigger className={selectClasses}>
+                <SelectValue placeholder="-Select multiple options-" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="hiking">Hiking</SelectItem>
+                <SelectItem value="webdev">Web Development</SelectItem>
+                <SelectItem value="recipes">Recipes</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Row 4: Summary & Travel tags */}
+           <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr_max-content_1fr] gap-x-8 gap-y-4 items-start"> {/* Changed items-center to items-start for textarea */}
+            <label className={`${labelClasses} pt-2`}>Summary :</label> {/* Added padding top */}
+            <textarea
+              placeholder="Type here"
+              className={`${inputBaseClasses} min-h-[100px] p-3 resize-none`} // Adjusted height and padding
+              rows={4} // Adjusted rows
+            />
+            <label className={labelClasses}>Travel tags:</label>
+            <Select>
+              <SelectTrigger className={selectClasses}>
+                <SelectValue placeholder="-Select other options-" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="alps">Alps</SelectItem>
+                <SelectItem value="beach">Beach</SelectItem>
+                <SelectItem value="city">City Break</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+
+          {/* Row 5: Main Content */}
+          <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr] gap-x-8 gap-y-2 items-start"> {/* Custom grid for label alignment */}
+            <label className={`${labelClasses} pt-2`}>Main Content</label> {/* Added padding top */}
+            <textarea
+              placeholder="Write your blog content here"
+              className={`${inputBaseClasses} min-h-[150px] p-3 resize-none w-full`} // Adjusted height, padding
+              rows={6} // Adjusted rows
+            />
+          </div>
+
+          {/* Row 6: Images Upload */}
+          <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr] gap-x-8 gap-y-2 items-center"> {/* Custom grid for label alignment */}
+             <label className={labelClasses}>Images Upload :</label>
+             <div className="border-2 border-dashed border-[#a0cde3] rounded-lg bg-[#d2ecf4] p-6 text-center text-gray-500 cursor-pointer hover:bg-[#c4e5ef] transition-colors w-full h-24 flex items-center justify-center"> {/* Adjusted styling */}
+               Drop files to upload
+             </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col items-center gap-4 pt-8"> {/* Adjusted gap and padding */}
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button className="bg-[#d2ecf4] text-black text-lg sm:text-xl px-10 py-2 rounded-full hover:bg-[#c4e5ef] transition-colors min-w-[150px] border border-gray-300"> {/* Adjusted styling */}
+                Preview
+              </Button>
+              <Button className="bg-[#d2ecf4] text-black text-lg sm:text-xl px-10 py-2 rounded-full hover:bg-[#c4e5ef] transition-colors min-w-[150px] border border-gray-300"> {/* Adjusted styling */}
+                Autosave
+              </Button>
+            </div>
+
+            <Button className="w-full max-w-md bg-[#d2ecf4] text-black text-lg sm:text-xl py-2 rounded-full hover:bg-[#c4e5ef] transition-colors border border-gray-300 mt-2"> {/* Adjusted styling */}
+              Publish
+            </Button>
+          </div>
+
+          {/* Back to Blogs button added back */}
+          <div className="text-center pt-4"> {/* Added padding top */}
+            <Button
+              variant="link" // Keeping variant="link" might override some background styles, let's remove it for solid background
+              onClick={handleBackToBlogs}
+              className="bg-[#003b95] text-white rounded-lg px-6 py-2.5 text-lg sm:text-xl w-full sm:w-auto hover:bg-[#002d73] transition-colors" // Applied new styles and added hover
+            >
+              Back to Blogs
+            </Button>
+          </div>
         </div>
       </div>
-
-      {/* Action Buttons - Grouped */}
-      <div className="mt-8 flex flex-wrap justify-center gap-3 sm:gap-4">
-        <Button variant="outline">Preview</Button>
-        <Button variant="outline">Autosave</Button>
-        <Button className="bg-[#003b95] hover:bg-[#002a6b] text-white"> {/* Primary style */}
-          Publish
-        </Button>
-        <Button variant="secondary" onClick={handleBackToBlogs}> {/* Secondary style */}
-          Back to Blogs
-        </Button>
-      </div>
-    </div>
+    </main>
   );
 };
-
-// Removed default export
