@@ -28,7 +28,7 @@ export const BlogPaginationSection = ({ paginationItems }: BlogPaginationSection
         <PaginationItem>
           <PaginationPrevious
             // Consider making these interactive later
-            className="bg-[#e0f7fa] border-[#a8c8e1] opacity-30 w-10 h-10 rounded border border-solid flex items-center justify-center cursor-not-allowed" // Added cursor style for disabled look
+            className="bg-[#e0f7fa] border-[#a8c8e1] w-10 h-10 rounded-md border border-solid flex items-center justify-center cursor-not-allowed" // Removed opacity-30, changed rounded to rounded-md
             href="#"
             aria-disabled="true" // Accessibility improvement
           />
@@ -40,7 +40,7 @@ export const BlogPaginationSection = ({ paginationItems }: BlogPaginationSection
             <React.Fragment key={index}>
               <PaginationItem>
                 <PaginationLink
-                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded border border-solid flex items-center justify-center font-semibold text-sm sm:text-base ${
+                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-md border border-solid flex items-center justify-center font-semibold text-sm sm:text-base ${ // Changed rounded to rounded-md
                     item.active
                       ? "bg-[#d2ecf4] border-[#003b95] text-[#003b95] cursor-default" // Added cursor style
                       : "bg-[#e0f7fa] border-[#a8c8e1] text-black hover:bg-gray-100" // Added hover state
@@ -66,7 +66,7 @@ export const BlogPaginationSection = ({ paginationItems }: BlogPaginationSection
         <PaginationItem>
           <PaginationNext
             // Consider making these interactive later
-            className="bg-[#e0f7fa] border-[#a8c8e1] w-9 h-9 sm:w-10 sm:h-10 rounded border border-solid flex items-center justify-center hover:bg-gray-100" // Added hover state
+            className="bg-[#e0f7fa] border-[#a8c8e1] w-9 h-9 sm:w-10 sm:h-10 rounded-md border border-solid flex items-center justify-center hover:bg-gray-100" // Changed rounded to rounded-md
             href="#"
           />
         </PaginationItem>
