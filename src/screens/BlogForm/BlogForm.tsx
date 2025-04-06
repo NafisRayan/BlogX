@@ -61,9 +61,9 @@ export const BlogForm = () => {
   };
 
   return (
-    <main className="min-h-screen bg-[#e0f7fa] py-8 px-4">
-      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-2xl font-bold mb-6">Create New Blog</h1>
+    <main className="flex flex-col items-center w-full min-h-screen bg-[#e0f7fa] py-8 px-4">
+      <div className="max-w-3xl w-full mx-auto bg-white rounded-lg shadow-md p-6">
+        <h1 className="text-3xl font-bold mb-10 text-left">Create New Blog</h1>
 
         {error && (
           <div className="bg-red-50 text-red-500 p-4 rounded-lg mb-6">
@@ -71,51 +71,51 @@ export const BlogForm = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium mb-2">Title</label>
+        <form onSubmit={handleSubmit} className="grid gap-4">
+          <div className="flex flex-col">
+            <label className="flex items-center justify-start text-black text-lg font-normal mb-2">Title</label>
             <input
               type="text"
               name="title"
               value={formData.title}
               onChange={handleChange}
               required
-              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
+              className="bg-[#d2ecf4] border border-[#d3d3d3] text-[#606060] text-base rounded-lg h-11 px-4 focus:outline-none focus:ring-1 focus:ring-[#003b95]"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Summary</label>
+          <div className="flex flex-col">
+            <label className="flex items-center justify-start text-black text-lg font-normal mb-2">Summary</label>
             <textarea
               name="summary"
               value={formData.summary}
               onChange={handleChange}
               required
               rows={3}
-              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
+              className="bg-[#d2ecf4] border border-[#d3d3d3] text-[#606060] text-base rounded-lg min-h-[100px] p-4 resize-none focus:outline-none focus:ring-1 focus:ring-[#003b95]"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Content</label>
+          <div className="flex flex-col">
+            <label className="flex items-center justify-start text-black text-lg font-normal mb-2">Content</label>
             <textarea
               name="content"
               value={formData.content}
               onChange={handleChange}
               required
               rows={6}
-              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
+              className="bg-[#d2ecf4] border border-[#d3d3d3] text-[#606060] text-base rounded-lg min-h-[150px] p-4 resize-none focus:outline-none focus:ring-1 focus:ring-[#003b95]"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Category</label>
+          <div className="flex flex-col">
+            <label className="flex items-center justify-start text-black text-lg font-normal mb-2">Category</label>
             <select
               name="category"
               value={formData.category}
               onChange={handleChange}
               required
-              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
+              className="bg-[#d2ecf4] border border-[#d3d3d3] text-[#606060] text-base rounded-lg h-11 px-4 focus:outline-none focus:ring-1 focus:ring-[#003b95]"
             >
               <option value="">Select a category</option>
               <option value="Technology">Technology</option>
@@ -126,8 +126,8 @@ export const BlogForm = () => {
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">
+          <div className="flex flex-col">
+            <label className="flex items-center justify-start text-black text-lg font-normal mb-2">
               Tags (comma-separated)
             </label>
             <input
@@ -135,24 +135,24 @@ export const BlogForm = () => {
               name="tags"
               value={formData.tags}
               onChange={handleChange}
-              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
+              className="bg-[#d2ecf4] border border-[#d3d3d3] text-[#606060] text-base rounded-lg h-11 px-4 focus:outline-none focus:ring-1 focus:ring-[#003b95]"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Author</label>
+          <div className="flex flex-col">
+            <label className="flex items-center justify-start text-black text-lg font-normal mb-2">Author</label>
             <input
               type="text"
               name="author"
               value={formData.author}
               onChange={handleChange}
               required
-              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
+              className="bg-[#d2ecf4] border border-[#d3d3d3] text-[#606060] text-base rounded-lg h-11 px-4 focus:outline-none focus:ring-1 focus:ring-[#003b95]"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Read Time (minutes)</label>
+          <div className="flex flex-col">
+            <label className="flex items-center justify-start text-black text-lg font-normal mb-2">Read Time (minutes)</label>
             <input
               type="number"
               name="readTime"
@@ -160,26 +160,32 @@ export const BlogForm = () => {
               onChange={handleChange}
               required
               min="1"
-              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
+              className="bg-[#d2ecf4] border border-[#d3d3d3] text-[#606060] text-base rounded-lg h-11 px-4 focus:outline-none focus:ring-1 focus:ring-[#003b95]"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Cover Image</label>
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept="image/*"
-              required
-              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
-            />
+          <div className="flex flex-col">
+            <label className="flex items-center justify-start text-black text-lg font-normal mb-2">Cover Image</label>
+            <div 
+              className="flex items-center justify-center bg-[#d2ecf4] border-2 border-dashed border-[#a0cde3] rounded-lg p-6 text-center text-[#808080] cursor-pointer h-24 hover:bg-[#c4e5ef] transition-colors duration-300"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <span>Click to upload or drag and drop</span>
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/*"
+                required
+                className="hidden"
+              />
+            </div>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex justify-center gap-4 pt-8">
             <Button
               type="submit"
               disabled={loading}
-              className="flex-1"
+              className="bg-[#003b95] text-white rounded-lg py-2.5 px-6 min-w-[150px] text-center hover:bg-[#002d73]"
             >
               {loading ? 'Creating...' : 'Create Blog'}
             </Button>
@@ -187,7 +193,7 @@ export const BlogForm = () => {
               type="button"
               variant="outline"
               onClick={() => navigate('/')}
-              className="flex-1"
+              className="bg-[#d2ecf4] text-black text-xl py-2 px-4 rounded-full min-w-[150px] border border-[#d3d3d3] text-center cursor-pointer hover:bg-[#c4e5ef] hover:transition-colors hover:duration-300"
             >
               Cancel
             </Button>
