@@ -10,7 +10,9 @@ export interface BlogFilters {
   page: number;
   limit: number;
   search?: string;
+  destination?: string; // Added destination filter
   category?: string;
+  subCategory?: string; // Added subCategory filter
   tags?: string[];
   sortBy?: 'latest' | 'popular' | 'mostLiked';
 }
@@ -76,7 +78,11 @@ export const BlogsPage = (): JSX.Element => {
     setFilters((prev) => ({
       ...prev,
       ...newFilters,
-      page: newFilters.search || newFilters.category || newFilters.sortBy ? 1 : prev.page,
+      page: newFilters.search ||
+            newFilters.category ||
+            newFilters.destination ||
+            newFilters.subCategory ||
+            newFilters.sortBy ? 1 : prev.page,
     }));
   };
 
@@ -98,12 +104,12 @@ export const BlogsPage = (): JSX.Element => {
           onSearch={(search) => handleFilterChange({ search })}
         />
 
+        <BlogPostSection />
+        
         <BlogContainerSection
           filters={filters}
           onFilterChange={handleFilterChange}
         />
-
-        <BlogPostSection />
 
         {loading && <div className="text-center py-8">Loading blogs...</div>}
         
