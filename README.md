@@ -1,128 +1,160 @@
-# BlogX - Modern Blog Platform
+# BlogX - Full Stack Blog Application
 
-A modern, full-stack blog platform built with React and TypeScript, featuring a clean UI powered by ShadCn components and TailwindCSS.
+A full-stack blog application built with React, TypeScript, Node.js, Express, and MongoDB.
 
-## 🌟 Features
+## Project Structure
 
-- **Modern UI/UX**: Clean and responsive design using ShadCn UI components
-- **Blog Management**: Create, read, update, and delete blog posts
-- **Rich Text Editor**: Compose blogs with a feature-rich editor
-- **Filtering & Search**: Easy-to-use blog filtering and search functionality
-- **Pagination**: Smooth navigation through blog posts
-- **Responsive Design**: Optimized for all device sizes
-- **TypeScript Support**: Full type safety across the application
-- **API Integration**: RESTful API backend for data management
+- `/api` - Backend API built with Node.js, Express, and TypeScript
+- `/src` - Frontend application built with React and TypeScript
 
-## 🚀 Tech Stack
+## Database Options
 
-### Frontend
-- React 18
-- TypeScript
-- Vite
-- TailwindCSS
-- ShadCn UI Components
-- React Router Dom
-- Radix UI Primitives
+You can run this application with either a local MongoDB instance or MongoDB Atlas.
 
-### Backend
-- Node.js
-- Express.js
-- MongoDB
-- Cloudinary (for image management)
+### Option 1: Local MongoDB
 
-## 📦 Installation
+1. Install MongoDB Community Edition:
+   - Download from: https://www.mongodb.com/try/download/community
+   - Follow installation instructions for your OS
+   - Start MongoDB service
 
-1. Clone the repository:
-```bash
-git clone https://github.com/NafisRayan/BlogX.git
-cd BlogX
+2. Configure `.env` for local MongoDB:
+```env
+PORT=5000
+MONGODB_URI=mongodb://127.0.0.1:27017/blogx
+NODE_ENV=development
+
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
-2. Install dependencies:
+### Option 2: MongoDB Atlas
+
+1. Create MongoDB Atlas Account:
+   - Go to https://www.mongodb.com/cloud/atlas
+   - Sign up for a free account
+   - Create a new project
+   - Build a database (choose FREE tier)
+
+2. Set Up Database:
+   - Create a database user
+   - Add your IP to the IP Access List
+   - Get your connection string
+
+3. Configure `.env` for MongoDB Atlas:
+```env
+PORT=5000
+MONGODB_URI=mongodb+srv://<username>:<password>@<your-cluster-url>/blogx?retryWrites=true&w=majority
+NODE_ENV=development
+
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+## Getting Started
+
+1. Install Dependencies:
 ```bash
 # Install frontend dependencies
 npm install
 
-# Install backend dependencies (Backend Not Ready Yet)
+# Install backend dependencies
 cd api
 npm install
+cd ..
 ```
 
-3. Set up environment variables: (Currently not applicable)
+2. Configure Cloudinary:
+   - Create account at https://cloudinary.com
+   - Get API credentials from dashboard
+   - Update `.env` with your Cloudinary credentials
 
-Create `.env` files in both root and api directories with necessary configurations.
+3. Start Development Servers:
 
-4. Start the development servers:
+Backend:
 ```bash
-# Start frontend
-npm run dev
-
-# Start backend in api directory (Backend Not Ready Yet)
+cd api
 npm run dev
 ```
 
-## 🔧 Configuration
-
-The application requires several environment variables to be set up:
-
-### Frontend (.env)
-```env
-VITE_API_URL=your_api_url
+Frontend:
+```bash
+# In another terminal
+npm run dev
 ```
 
-### Backend (api/.env) (Backend Not Ready Yet)
-```env
-PORT=backend_port
-MONGODB_URI=your_mongodb_uri
-CLOUDINARY_CLOUD_NAME=your_cloudinary_name
-CLOUDINARY_API_KEY=your_cloudinary_key
-CLOUDINARY_API_SECRET=your_cloudinary_secret
-```
+The application will be available at:
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:5000
 
-## 🌐 Project Structure
+## Features
 
-```
-blogx/
-├── src/                    # Frontend source files
-│   ├── components/        # Reusable UI components
-│   ├── screens/          # Page components
-│   ├── services/         # API services
-│   └── lib/             # Utility functions
-├── api/                  # Backend source files
-│   ├── src/
-│   │   ├── config/      # Configuration files
-│   │   ├── controllers/ # Route controllers
-│   │   ├── models/      # Database models
-│   │   ├── routes/      # API routes
-│   │   └── types/       # TypeScript types
-│   └── index.ts         # Entry point
-└── public/              # Static assets
-```
+- Create, read, update, and delete blog posts
+- Image upload with Cloudinary integration
+- Like and bookmark posts
+- Comment on blog posts
+- Responsive design
+- Category and tag filtering
+- Pagination support
 
-## 📱 Features Overview
+## Implementation Details
 
-1. **Blog Posts Management**
-   - Create new blog posts with rich text content
-   - Upload and manage images
-   - Edit existing posts
-   - Delete posts
+### Backend
+- Node.js + Express.js with TypeScript
+- MongoDB with Mongoose for data storage
+- Cloudinary for image uploads
+- RESTful API design
+- Proper error handling and validation
 
-2. **User Interface**
-   - Responsive design for all screen sizes
-   - Modern and clean UI components
-   - Smooth animations and transitions
-   - Intuitive navigation
+### Frontend
+- React with TypeScript
+- Tailwind CSS for styling
+- Axios for API communication
+- Responsive component design
+- Real-time updates for likes/comments
 
-3. **Search & Filter**
-   - Filter posts by category
-   - Search functionality
-   - Sort by date, popularity, etc.
+## API Documentation
 
-4. **Pagination**
-   - Efficient loading of blog posts
-   - Smooth navigation between pages
+See the [API README](api/README.md) for detailed documentation of all available endpoints.
 
-## 👨‍💻 Author
+## Troubleshooting
 
-**Nafis Rayan**
-- GitHub: [@NafisRayan](https://github.com/NafisRayan)
+### MongoDB Connection Issues
+
+1. Local MongoDB:
+   - Ensure MongoDB service is running
+   - Check if you can connect using MongoDB Compass
+   - Verify port 27017 is available
+
+2. MongoDB Atlas:
+   - Verify connection string format
+   - Check if IP is whitelisted
+   - Confirm database user credentials
+   - Test connection using MongoDB Compass
+
+### Cloudinary Issues
+
+1. Image Upload Errors:
+   - Verify API credentials
+   - Check file size limits
+   - Ensure proper file types
+
+2. Configuration:
+   - Check environment variables
+   - Verify cloud name format
+   - Test with Cloudinary API directly
+
+## Development
+
+The project uses TypeScript throughout the stack. Make sure to:
+- Follow the established type definitions
+- Run type checking before commits
+- Keep the API documentation updated
+
+## License
+
+MIT
