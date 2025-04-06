@@ -1,41 +1,79 @@
 import { v2 as cloudinary } from 'cloudinary';
-import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 
-dotenv.config();
+// Ensure uploads directory exists
+const uploadsDir = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-});
+const isCloudinaryConfigured = () => {
+  return (
+    process.env.CLOUDINARY_CLOUD_NAME &&
+    process.env.CLOUDINARY_API_KEY &&
+    process.env.CLOUDINARY_API_SECRET
+  );
+};
 
-// Helper function to upload file to Cloudinary
-export const uploadToCloudinary = async (file: Express.Multer.File): Promise<{ url: string; public_id: string }> => {
+if (isCloudinaryConfigured()) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+} else {
+  console.warn('Cloudinary credentials not found. Image upload will use local storage.');
+}
+
+export const uploadImage = async (imagePath: string) => {
   try {
-    const result = await cloudinary.uploader.upload(file.path, {
-      folder: 'blogx',
-      resource_type: 'auto'
+    if (!isCloudinaryConfigured()) {
+      // For development without Cloudinary: store locally
+      const fileName = `${Date.now()}-${path.basename(imagePath)}`;
+      const newPath = path.join(uploadsDir, fileName);
+      fs.copyFileSync(imagePath, newPath);
+      
+      // Clean up original file
+      fs.unlinkSync(imagePath);
+      
+      return {
+        public_id: fileName,
+        secure_url: `http://localhost:5000/uploads/${fileName}`,
+      };
+    }
+
+    const result = await cloudinary.uploader.upload(imagePath, {
+      folder: 'blog_images',
     });
 
+    // Clean up original file
+    fs.unlinkSync(imagePath);
+
     return {
-      url: result.secure_url,
-      public_id: result.public_id
+      public_id: result.public_id,
+      secure_url: result.secure_url,
     };
   } catch (error) {
-    console.error('Cloudinary upload error:', error);
-    throw new Error('Failed to upload file to Cloudinary');
+    console.error('Image upload error:', error);
+    throw error;
   }
 };
 
-// Helper function to delete file from Cloudinary
-export const deleteFromCloudinary = async (public_id: string): Promise<void> => {
+export const deleteImage = async (publicId: string) => {
   try {
-    await cloudinary.uploader.destroy(public_id);
+    if (!isCloudinaryConfigured()) {
+      // For local storage
+      const filePath = path.join(uploadsDir, publicId);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+      return;
+    }
+
+    await cloudinary.uploader.destroy(publicId);
   } catch (error) {
-    console.error('Cloudinary delete error:', error);
-    throw new Error('Failed to delete file from Cloudinary');
+    console.error('Image deletion error:', error);
+    throw error;
   }
 };
-
-export default cloudinary;

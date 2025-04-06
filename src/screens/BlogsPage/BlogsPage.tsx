@@ -1,62 +1,134 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/ui/button";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  // Removed direct Pagination imports, they are now in BlogPaginationSection
-} from "../../components/ui/pagination";
-import { BlogCardSection } from "./sections/BlogCardSection";
-import { BlogContainerSection } from "./sections/BlogContainerSection";
-import { BlogHeaderSection } from "./sections/BlogHeaderSection";
-import { BlogPostSection } from "./sections/BlogPostSection";
-import { BlogPaginationSection } from "./sections/BlogPaginationSection"; // Import the new component
+import React, { useState, useEffect } from 'react';
+import { blogApi } from '../../services/api';
+import { BlogCardSection } from './sections/BlogCardSection';
+import { BlogContainerSection } from './sections/BlogContainerSection';
+import { BlogHeaderSection } from './sections/BlogHeaderSection';
+import { BlogPostSection } from './sections/BlogPostSection';
+import { BlogPaginationSection } from './sections/BlogPaginationSection';
+
+export interface BlogFilters {
+  page: number;
+  limit: number;
+  search?: string;
+  category?: string;
+  tags?: string[];
+  sortBy?: 'latest' | 'popular' | 'mostLiked';
+}
+
+export interface BlogData {
+  blogs: Array<{
+    _id: string;
+    title: string;
+    content: string;
+    summary: string;
+    author: string;
+    coverImage: {
+      url: string;
+      public_id: string;
+    };
+    readTime: number;
+    category: string;
+    tags: string[];
+    likes: number;
+    views: number;
+    comments: Array<{
+      user: string;
+      content: string;
+      createdAt: string;
+    }>;
+    createdAt: string;
+  }>;
+  pagination: {
+    total: number;
+    page: number;
+    pages: number;
+  };
+}
 
 export const BlogsPage = (): JSX.Element => {
-  const navigate = useNavigate();
+  const [blogData, setBlogData] = useState<BlogData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<BlogFilters>({
+    page: 1,
+    limit: 9,
+    sortBy: 'latest',
+  });
 
-  // Pagination data
-  const paginationItems = [
-    { page: 1, active: true },
-    { page: 2, active: false },
-    { page: 3, active: false },
-    { page: 36, active: false },
-  ];
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        setLoading(true);
+        const response = await blogApi.getBlogs(filters);
+        setBlogData(response);
+      } catch (err) {
+        setError('Failed to fetch blogs');
+        console.error('Error fetching blogs:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogs();
+  }, [filters]);
+
+  const handleFilterChange = (newFilters: Partial<BlogFilters>) => {
+    setFilters((prev) => ({
+      ...prev,
+      ...newFilters,
+      page: newFilters.search || newFilters.category || newFilters.sortBy ? 1 : prev.page,
+    }));
+  };
+
+  const handlePageChange = (page: number) => {
+    setFilters((prev) => ({ ...prev, page }));
+  };
+
+  const paginationItems = blogData
+    ? Array.from({ length: blogData.pagination.pages }, (_, i) => ({
+        page: i + 1,
+        active: i + 1 === filters.page,
+      }))
+    : [];
 
   return (
     <main className="bg-[#e0f7fa] flex flex-row justify-center w-full min-h-screen">
-      <div className="w-full max-w-[1512px] relative pb-8"> {/* Removed redundant bg, Added padding-bottom */}
-        {/* Blog Header Section */}
-        <BlogHeaderSection />
+      <div className="w-full max-w-[1512px] relative pb-8">
+        <BlogHeaderSection
+          onSearch={(search) => handleFilterChange({ search })}
+        />
 
-        {/* Blog Container Section */}
-        <BlogContainerSection />
+        <BlogContainerSection
+          filters={filters}
+          onFilterChange={handleFilterChange}
+        />
 
-        {/* Blog Post Section */}
         <BlogPostSection />
 
-        {/* Blog Card Section */}
-        <BlogCardSection />
+        {loading && <div className="text-center py-8">Loading blogs...</div>}
+        
+        {error && (
+          <div className="text-center text-red-500 py-8">{error}</div>
+        )}
 
-        {/* Removed incorrect BlogPaginationSection usage */}
+        {blogData && !loading && !error && (
+          <>
+            <BlogCardSection
+              blogs={blogData.blogs}
+              onRefresh={() => handleFilterChange({})}
+            />
 
-        {/* Post Blog Button and Pagination */}
-        {/* Responsive margins, flex-wrap for small screens */}
-        <div className="flex flex-wrap justify-between items-center gap-6 mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-12">
-          <Button
-            className="bg-[#003b95] text-white rounded-lg px-6 py-2.5 text-lg sm:text-xl w-full sm:w-auto" // Responsive padding, text size, and width
-            onClick={() => navigate('/blog-form')} // Use navigate here
-          >
-            Post your blog {/* Removed span and specific font family */}
-          </Button>
-
-          {/* Use the new BlogPaginationSection component */}
-          <BlogPaginationSection paginationItems={paginationItems} />
-
-        </div>
+            {blogData.pagination.pages > 1 && (
+              <div className="flex justify-center mt-8">
+                <BlogPaginationSection
+                  paginationItems={paginationItems}
+                  currentPage={filters.page}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            )}
+          </>
+        )}
       </div>
     </main>
   );

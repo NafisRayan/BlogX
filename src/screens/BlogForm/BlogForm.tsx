@@ -1,147 +1,198 @@
-import React from "react";
-import { useNavigate } from "react-router-dom"; // Added back
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../../components/ui/button';
+import { blogApi } from '../../services/api';
 
 export const BlogForm = () => {
-  const navigate = useNavigate(); // Added back
+  const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    summary: '',
+    content: '',
+    category: '',
+    tags: '',
+    author: '',
+    readTime: '5' // Added default readTime
+  });
 
-  // Added back
-  const handleBackToBlogs = () => {
-    navigate('/blogs');
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
-  // Adjusted classes based on the image
-  const labelClasses = "text-black text-lg sm:text-xl font-normal flex items-center justify-start"; // Adjusted for alignment
-  const inputBaseClasses = "bg-[#d2ecf4] border border-gray-300 w-full text-gray-600 text-base sm:text-lg rounded-lg focus-visible:ring-1 focus-visible:ring-[#003b95] h-11 px-4"; // Adjusted styling
-  const selectClasses = "bg-[#d2ecf4] border border-gray-300 text-gray-600 text-base sm:text-lg rounded-lg h-11"; // Adjusted styling
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const fileInput = fileInputRef.current;
+
+    if (!fileInput?.files?.[0]) {
+      setError('Cover image is required');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const submitData = new FormData();
+      submitData.append('title', formData.title);
+      submitData.append('summary', formData.summary);
+      submitData.append('content', formData.content);
+      submitData.append('category', formData.category);
+      submitData.append('tags', formData.tags);
+      submitData.append('author', formData.author);
+      submitData.append('readTime', formData.readTime);
+      submitData.append('coverImage', fileInput.files[0]);
+
+      await blogApi.createBlog(submitData);
+      navigate('/');
+    } catch (err) {
+      console.error('Failed to create blog:', err);
+      setError('Failed to create blog. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <main className="bg-[#e0f7fa] flex flex-col items-center w-full min-h-screen py-8 px-4">
-      <div className="w-full max-w-[1000px]"> {/* Adjusted max-width for better centering */}
-        <h1 className="text-[32px] font-bold mb-10 text-left"> {/* Adjusted font weight and alignment */}
-          Blog Form
-        </h1>
+    <main className="min-h-screen bg-[#e0f7fa] py-8 px-4">
+      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
+        <h1 className="text-2xl font-bold mb-6">Create New Blog</h1>
 
-        {/* Removed the white background container to match the image's simpler layout */}
-        <div className="space-y-6"> {/* Adjusted spacing */}
-          {/* Row 1: Author Name (Label Only) */}
-          <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr] gap-x-8 gap-y-4 items-center"> {/* Custom grid for label alignment */}
-             <label className={labelClasses}>Author Name:</label>
-             {/* Input removed as per image */}
-             <div></div> {/* Placeholder for grid structure */}
+        {error && (
+          <div className="bg-red-50 text-red-500 p-4 rounded-lg mb-6">
+            {error}
           </div>
+        )}
 
-          {/* Row 2: Blog Title & Publication Date */}
-          <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr_max-content_1fr] gap-x-8 gap-y-4 items-center"> {/* Custom grid for label alignment */}
-            <label className={labelClasses}>Blog Title :</label>
-            <Input
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">Title</label>
+            <input
               type="text"
-              placeholder="Enter the title of your blog post"
-              className={inputBaseClasses}
-            />
-            <label className={labelClasses}>Publication Date:</label>
-            <Input
-              type="text"
-              placeholder="DD/MM/YYYY"
-              className={inputBaseClasses}
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
             />
           </div>
 
-          {/* Row 3: Category & Sub-category */}
-          <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr_max-content_1fr] gap-x-8 gap-y-4 items-center"> {/* Custom grid for label alignment */}
-            <label className={labelClasses}>Category :</label>
-            <Select>
-              <SelectTrigger className={selectClasses}>
-                <SelectValue placeholder="-Select other options-" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="travel">Travel</SelectItem>
-                <SelectItem value="tech">Technology</SelectItem>
-                <SelectItem value="food">Food</SelectItem>
-              </SelectContent>
-            </Select>
-            <label className={labelClasses}>Sub-category :</label>
-            <Select>
-              <SelectTrigger className={selectClasses}>
-                <SelectValue placeholder="-Select multiple options-" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="hiking">Hiking</SelectItem>
-                <SelectItem value="webdev">Web Development</SelectItem>
-                <SelectItem value="recipes">Recipes</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Row 4: Summary & Travel tags */}
-           <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr_max-content_1fr] gap-x-8 gap-y-4 items-start"> {/* Changed items-center to items-start for textarea */}
-            <label className={`${labelClasses} pt-2`}>Summary :</label> {/* Added padding top */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Summary</label>
             <textarea
-              placeholder="Type here"
-              className={`${inputBaseClasses} min-h-[100px] p-3 resize-none`} // Adjusted height and padding
-              rows={4} // Adjusted rows
+              name="summary"
+              value={formData.summary}
+              onChange={handleChange}
+              required
+              rows={3}
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
             />
-            <label className={labelClasses}>Travel tags:</label>
-            <Select>
-              <SelectTrigger className={selectClasses}>
-                <SelectValue placeholder="-Select other options-" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="alps">Alps</SelectItem>
-                <SelectItem value="beach">Beach</SelectItem>
-                <SelectItem value="city">City Break</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
-
-          {/* Row 5: Main Content */}
-          <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr] gap-x-8 gap-y-2 items-start"> {/* Custom grid for label alignment */}
-            <label className={`${labelClasses} pt-2`}>Main Content</label> {/* Added padding top */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Content</label>
             <textarea
-              placeholder="Write your blog content here"
-              className={`${inputBaseClasses} min-h-[150px] p-3 resize-none w-full`} // Adjusted height, padding
-              rows={6} // Adjusted rows
+              name="content"
+              value={formData.content}
+              onChange={handleChange}
+              required
+              rows={6}
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
             />
           </div>
 
-          {/* Row 6: Images Upload */}
-          <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr] gap-x-8 gap-y-2 items-center"> {/* Custom grid for label alignment */}
-             <label className={labelClasses}>Images Upload :</label>
-             <div className="border-2 border-dashed border-[#a0cde3] rounded-lg bg-[#d2ecf4] p-6 text-center text-gray-500 cursor-pointer hover:bg-[#c4e5ef] transition-colors w-full h-24 flex items-center justify-center"> {/* Adjusted styling */}
-               Drop files to upload
-             </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col items-center gap-4 pt-8"> {/* Adjusted gap and padding */}
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button className="bg-[#d2ecf4] text-black text-lg sm:text-xl px-10 py-2 rounded-full hover:bg-[#c4e5ef] transition-colors min-w-[150px] border border-gray-300"> {/* Adjusted styling */}
-                Preview
-              </Button>
-              <Button className="bg-[#d2ecf4] text-black text-lg sm:text-xl px-10 py-2 rounded-full hover:bg-[#c4e5ef] transition-colors min-w-[150px] border border-gray-300"> {/* Adjusted styling */}
-                Autosave
-              </Button>
-            </div>
-
-            <Button className="w-full max-w-md bg-[#d2ecf4] text-black text-lg sm:text-xl py-2 rounded-full hover:bg-[#c4e5ef] transition-colors border border-gray-300 mt-2"> {/* Adjusted styling */}
-              Publish
-            </Button>
-          </div>
-
-          {/* Back to Blogs button added back */}
-          <div className="text-center pt-4"> {/* Added padding top */}
-            <Button
-              variant="link" // Keeping variant="link" might override some background styles, let's remove it for solid background
-              onClick={handleBackToBlogs}
-              className="bg-[#003b95] text-white rounded-lg px-6 py-2.5 text-lg sm:text-xl w-full sm:w-auto hover:bg-[#002d73] transition-colors" // Applied new styles and added hover
+          <div>
+            <label className="block text-sm font-medium mb-2">Category</label>
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
             >
-              Back to Blogs
+              <option value="">Select a category</option>
+              <option value="Technology">Technology</option>
+              <option value="Travel">Travel</option>
+              <option value="Lifestyle">Lifestyle</option>
+              <option value="Food">Food</option>
+              <option value="Business">Business</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Tags (comma-separated)
+            </label>
+            <input
+              type="text"
+              name="tags"
+              value={formData.tags}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Author</label>
+            <input
+              type="text"
+              name="author"
+              value={formData.author}
+              onChange={handleChange}
+              required
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Read Time (minutes)</label>
+            <input
+              type="number"
+              name="readTime"
+              value={formData.readTime}
+              onChange={handleChange}
+              required
+              min="1"
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Cover Image</label>
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/*"
+              required
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#003b95] focus:outline-none"
+            />
+          </div>
+
+          <div className="flex gap-4">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="flex-1"
+            >
+              {loading ? 'Creating...' : 'Create Blog'}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate('/')}
+              className="flex-1"
+            >
+              Cancel
             </Button>
           </div>
-        </div>
+        </form>
       </div>
     </main>
   );

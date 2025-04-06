@@ -1,83 +1,26 @@
-import mongoose, { Schema } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { IBlog } from '../types/blog.types';
 
-const blogSchema = new Schema({
-  title: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  content: {
-    type: String,
-    required: true
-  },
-  summary: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  author: {
-    type: String,
-    required: true
-  },
+const blogSchema = new Schema<IBlog>({
+  title: { type: String, required: true },
+  content: { type: String, required: true },
+  summary: { type: String, required: true },
+  author: { type: String, required: true },
   coverImage: {
-    url: {
-      type: String,
-      required: true
-    },
-    public_id: {
-      type: String,
-      required: true
-    }
+    url: { type: String, required: true },
+    public_id: { type: String, required: true }
   },
-  tags: [{
-    type: String,
-    trim: true
-  }],
-  category: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  readTime: {
-    type: Number,
-    required: true,
-    min: 1
-  },
-  likes: {
-    type: Number,
-    default: 0
-  },
-  views: {
-    type: Number,
-    default: 0
-  },
+  readTime: { type: Number, required: true, default: 5 }, // Added readTime with default value
+  category: { type: String, required: true },
+  tags: [{ type: String }],
+  likes: { type: Number, default: 0 },
+  views: { type: Number, default: 0 },
   comments: [{
-    user: {
-      type: String,
-      required: true
-    },
-    content: {
-      type: String,
-      required: true
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now
-    }
-  }]
-}, {
-  timestamps: true
+    user: { type: String, required: true },
+    content: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now }
+  }],
+  createdAt: { type: Date, default: Date.now }
 });
 
-// Add text index for search functionality
-blogSchema.index({
-  title: 'text',
-  content: 'text',
-  summary: 'text',
-  tags: 'text'
-});
-
-const Blog = mongoose.model<IBlog>('Blog', blogSchema);
-
-export default Blog;
+export default model<IBlog>('Blog', blogSchema);

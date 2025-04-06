@@ -1,22 +1,27 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
-import { connectDB } from './config/database';
+import morgan from 'morgan';
+import path from 'path';
 import blogRoutes from './routes/blog.routes';
-
-// Load environment variables
-dotenv.config();
+import { connectDB } from './config/database';
 
 const app = express();
 const port = process.env.PORT || 5000;
 
+// Connect to MongoDB
+connectDB();
+
 // Middleware
+app.use(morgan('dev'));
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: 'http://localhost:5173',
   credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
 app.use('/api/blogs', blogRoutes);
@@ -24,19 +29,15 @@ app.use('/api/blogs', blogRoutes);
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+  res.status(500).json({
+    message: 'Something went wrong!',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
 });
 
-// Connect to database
-connectDB()
-  .then(() => {
-    app.listen(port, () => {
-      console.log(`Server is running on port ${port}`);
-    });
-  })
-  .catch((error) => {
-    console.error('Failed to connect to database:', error);
-    process.exit(1);
-  });
+// Start server
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 
 export default app;

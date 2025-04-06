@@ -1,6 +1,5 @@
-import { Document } from 'mongoose';
-
-export interface IBlog extends Document {
+export interface IBlog {
+  _id: string;
   title: string;
   content: string;
   summary: string;
@@ -9,18 +8,17 @@ export interface IBlog extends Document {
     url: string;
     public_id: string;
   };
-  tags: string[];
-  category: string;
   readTime: number;
+  category: string;
+  tags: string[];
   likes: number;
   views: number;
-  comments: {
+  comments: Array<{
     user: string;
     content: string;
     createdAt: Date;
-  }[];
+  }>;
   createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface BlogCreateInput {
@@ -28,23 +26,26 @@ export interface BlogCreateInput {
   content: string;
   summary: string;
   author: string;
-  tags: string[];
-  category: string;
+  coverImage: Express.Multer.File;
   readTime: number;
+  category: string;
+  tags: string;
 }
 
-export interface BlogUpdateInput extends Partial<BlogCreateInput> {
-  coverImage?: {
-    url: string;
-    public_id: string;
-  };
-}
-
-export interface BlogFilters {
+export interface GetBlogsQuery {
+  page?: number;
+  limit?: number;
   search?: string;
   category?: string;
   tags?: string[];
   sortBy?: 'latest' | 'popular' | 'mostLiked';
-  page?: number;
-  limit?: number;
+}
+
+export interface GetBlogsResponse {
+  blogs: IBlog[];
+  pagination: {
+    total: number;
+    page: number;
+    pages: number;
+  };
 }

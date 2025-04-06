@@ -1,71 +1,58 @@
-import React from "react";
+import React from 'react';
 import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
   PaginationItem,
   PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "../../../../components/ui/pagination";
-
-interface PaginationItemData {
-  page: number;
-  active: boolean;
-}
+} from '../../../../components/ui/pagination';
 
 interface BlogPaginationSectionProps {
-  paginationItems: PaginationItemData[];
+  paginationItems: {
+    page: number;
+    active: boolean;
+  }[];
+  currentPage: number;
+  onPageChange: (page: number) => void;
 }
 
-export const BlogPaginationSection = ({ paginationItems }: BlogPaginationSectionProps): JSX.Element => {
+export const BlogPaginationSection: React.FC<BlogPaginationSectionProps> = ({
+  paginationItems,
+  currentPage,
+  onPageChange,
+}) => {
   return (
-    <Pagination className="w-full sm:w-auto">
-      <PaginationContent className="flex items-center justify-center sm:justify-end gap-3">
-        <PaginationItem>
-          <PaginationPrevious
-            className="bg-[#e0f7fa] border-[#a8c8e1] w-9 h-9 sm:w-10 sm:h-10 rounded-md border border-solid flex items-center justify-center hover:bg-gray-100 transition-colors pl-0 pr-0"
-            href="#"
-          >
-            <span className="sr-only">Previous</span>
-          </PaginationPrevious>
-        </PaginationItem>
-
-        <div className="flex items-center gap-3">
-          {paginationItems.map((item, index) => (
-            <React.Fragment key={index}>
-              <PaginationItem>
-                <PaginationLink
-                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-md border border-solid flex items-center justify-center font-semibold text-sm sm:text-base ${
-                    item.active
-                      ? "bg-[#d2ecf4] border-[#003b95] text-[#003b95] cursor-default"
-                      : "bg-[#e0f7fa] border-[#a8c8e1] text-black hover:bg-gray-100 transition-colors"
-                  }`}
-                  href="#"
-                  isActive={item.active}
-                  aria-current={item.active ? "page" : undefined}
-                >
-                  {item.page}
-                </PaginationLink>
+    <Pagination>
+      <PaginationContent>
+        {paginationItems.map((item, index) => {
+          // Show ellipsis for gaps larger than 2 pages
+          if (
+            index > 0 &&
+            paginationItems[index - 1].page < item.page - 1
+          ) {
+            return (
+              <PaginationItem key={`ellipsis-${index}`}>
+                <PaginationEllipsis />
               </PaginationItem>
+            );
+          }
 
-              {index === 2 && paginationItems.length > 3 && (
-                <PaginationItem>
-                  <PaginationEllipsis className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-sm sm:text-base" />
-                </PaginationItem>
-              )}
-            </React.Fragment>
-          ))}
-        </div>
-
-        <PaginationItem>
-          <PaginationNext
-            className="bg-[#e0f7fa] border-[#a8c8e1] w-9 h-9 sm:w-10 sm:h-10 rounded-md border border-solid flex items-center justify-center hover:bg-gray-100 transition-colors pl-0 pr-0"
-            href="#"
-          >
-            <span className="sr-only">Next</span>
-          </PaginationNext>
-        </PaginationItem>
+          return (
+            <PaginationItem key={item.page}>
+              <PaginationLink
+                onClick={() => onPageChange(item.page)}
+                isActive={currentPage === item.page}
+                className={
+                  currentPage === item.page
+                    ? 'bg-[#003b95] text-white hover:bg-[#003b95]/90'
+                    : ''
+                }
+              >
+                {item.page}
+              </PaginationLink>
+            </PaginationItem>
+          );
+        })}
       </PaginationContent>
     </Pagination>
   );

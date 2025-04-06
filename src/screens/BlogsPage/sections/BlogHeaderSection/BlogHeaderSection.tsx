@@ -1,30 +1,20 @@
-import { Menu, SearchIcon } from "lucide-react";
-import React from "react";
-import { Button } from "../../../../components/ui/button";
-import { Input } from "../../../../components/ui/input";
+import React from 'react';
 
-export const BlogHeaderSection = (): JSX.Element => {
+interface BlogHeaderSectionProps {
+  onSearch: (search: string) => void;
+}
+
+export const BlogHeaderSection = ({ onSearch }: BlogHeaderSectionProps) => {
   return (
-    <div className="flex flex-wrap items-center gap-4 md:gap-6 w-full mt-8 px-4 sm:px-8 md:px-12 lg:px-20">
-      {/* Input container */}
-      <div className="flex items-center relative bg-[#d2ecf4] rounded-full overflow-hidden shadow-[0px_4px_4px_#00000026] flex-1 min-w-[280px]">
-        {/* Menu icon positioned absolutely inside the container */}
-        <Menu className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
-        
-        {/* Input field with padding for both icons */}
-        <Input
-          className="border-none bg-transparent font-normal text-base sm:text-lg md:text-xl tracking-normal sm:tracking-[0.50px] leading-tight sm:leading-6 text-[#949494] focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-[#949494] flex-1 h-12 sm:h-14 pl-16 pr-12"
-          placeholder="Search blog by Title/Author's name/Destination/Category"
+    <header className="w-full px-4 sm:px-8 md:px-12 lg:px-16 py-6 bg-white shadow-sm">
+      <div className="max-w-7xl mx-auto">
+        <input
+          type="text"
+          placeholder="Search blogs..."
+          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003b95]"
+          onChange={(e) => onSearch(e.target.value)}
         />
-        
-        {/* Search icon positioned absolutely inside the container */}
-        <SearchIcon className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-gray-500 pointer-events-none" />
       </div>
-
-      {/* Search button */}
-      <Button className="w-full sm:w-auto h-12 sm:h-14 px-6 sm:px-8 py-2 sm:py-3 bg-[#003b95] rounded-full text-white text-lg sm:text-xl md:text-2xl font-normal">
-        Search
-      </Button>
-    </div>
+    </header>
   );
 };

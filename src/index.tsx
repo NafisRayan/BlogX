@@ -1,25 +1,23 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { BlogsPage } from "./screens/BlogsPage/BlogsPage";
-import { BlogForm } from "./screens/BlogForm/BlogForm"; // Changed to named import
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BlogsPage } from './screens/BlogsPage/BlogsPage';
+import { BlogForm } from './screens/BlogForm/BlogForm';
+import './index.css';
 
 const App = () => {
-  // Removed currentPage state
-
   return (
-    <StrictMode>
-      <BrowserRouter>
-        <Routes>
-          {/* Define routes */}
-          <Route path="/blogs" element={<BlogsPage />} />
-          <Route path="/blog-form" element={<BlogForm />} />
-          {/* Default route */}
-          <Route path="/" element={<BlogsPage />} />
-        </Routes>
-      </BrowserRouter>
-    </StrictMode>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<BlogsPage />} />
+        <Route path="/blog-form" element={<BlogForm />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
 
-createRoot(document.getElementById("app") as HTMLElement).render(<App />);
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
