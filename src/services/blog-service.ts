@@ -8,7 +8,7 @@ interface BlogQuery {
   tag?: string;
 }
 
-interface CreateBlogData {
+export interface CreateBlogData {
   title: string;
   subtitle: string;
   author: string;
@@ -34,17 +34,36 @@ class BlogService {
 
     // Append blog data
     Object.entries(data).forEach(([key, value]) => {
+      if (value === undefined || value === null) {
+        console.warn(`Warning: ${key} is ${value}`);
+        return; // Skip undefined or null values
+      }
+
       if (Array.isArray(value)) {
-        value.forEach(item => formData.append(key + '[]', item));
+        // For arrays, append as a single JSON string
+        formData.append(key, JSON.stringify(value));
       } else {
-        formData.append(key, value);
+        formData.append(key, value.toString());
       }
     });
 
+    // Log the data being processed
+    console.log('Processing blog data:', data);
+
     // Append images
-    images.forEach(image => {
-      formData.append('images', image);
-    });
+    if (Array.isArray(images)) {
+      images.forEach((image) => {
+        if (image instanceof File) {
+          formData.append('images', image);
+        }
+      });
+    }
+
+    // Log form data for debugging
+    console.log('Form data entries:');
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
 
     return apiClient.post('/blogs', formData, {
       headers: {
@@ -61,16 +80,18 @@ class BlogService {
       Object.entries(data).forEach(([key, value]) => {
         if (value !== undefined) {
           if (Array.isArray(value)) {
-            value.forEach(item => formData.append(key + '[]', item));
+            value.forEach((item, index) => {
+              formData.append(`${key}[${index}]`, item);
+            });
           } else {
-            formData.append(key, value);
+            formData.append(key, value.toString());
           }
         }
       });
 
       // Append images
-      images.forEach(image => {
-        formData.append('images', image);
+      images.forEach((image, index) => {
+        formData.append(`images`, image);
       });
 
       return apiClient.put(`/blogs/${id}`, formData, {

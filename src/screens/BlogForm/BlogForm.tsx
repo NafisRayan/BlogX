@@ -1,9 +1,9 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
-import blogService from "../../services/blog-service";
+import blogService, { CreateBlogData } from "../../services/blog-service";
 import userService from "../../services/user-service";
 
 interface FormData {
@@ -32,6 +32,33 @@ export const BlogForm = () => {
   const [images, setImages] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [defaultUserId, setDefaultUserId] = useState<string | null>(null);
+
+  // Initialize default user on component mount
+  useEffect(() => {
+    const initializeDefaultUser = async () => {
+      try {
+        // Try to get existing users
+        const users = await userService.getUsers();
+        
+        if (users && users.length > 0) {
+          setDefaultUserId(users[0]._id);
+        } else {
+          // Create a default user if none exists
+          const newUser = await userService.createUser({
+            name: "Default User",
+            email: "default@example.com"
+          });
+          setDefaultUserId(newUser._id);
+        }
+      } catch (error) {
+        console.error('Error initializing default user:', error);
+        setError('Failed to initialize user. Please try again.');
+      }
+    };
+
+    initializeDefaultUser();
+  }, []);
 
   const handleBackToBlogs = () => {
     navigate('/blogs');
@@ -42,41 +69,99 @@ export const BlogForm = () => {
       ...prev,
       [key]: value
     }));
+    // Clear error when user makes changes
+    setError(null);
   };
 
   const handleImageDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const droppedFiles = Array.from(event.dataTransfer.files);
-    setImages(prev => [...prev, ...droppedFiles]);
+    
+    // Validate file types
+    const validFiles = droppedFiles.filter(file => file.type.startsWith('image/'));
+    if (validFiles.length !== droppedFiles.length) {
+      setError('Please upload only image files');
+      return;
+    }
+
+    setImages(prev => [...prev, ...validFiles]);
+    setError(null);
   }, []);
 
   const handleImageSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const selectedFiles = Array.from(event.target.files);
-      setImages(prev => [...prev, ...selectedFiles]);
+      
+      // Validate file types
+      const validFiles = selectedFiles.filter(file => file.type.startsWith('image/'));
+      if (validFiles.length !== selectedFiles.length) {
+        setError('Please upload only image files');
+        return;
+      }
+
+      setImages(prev => [...prev, ...validFiles]);
+      setError(null);
     }
   }, []);
+
+  const validateForm = () => {
+    const requiredFields: (keyof FormData)[] = ['title', 'subtitle', 'summary', 'content', 'category'];
+    const missingFields = requiredFields.filter(field => {
+      const value = formData[field];
+      return typeof value === 'string' ? !value.trim() : !value;
+    });
+    
+    if (missingFields.length > 0) {
+      throw new Error(`Please fill in all required fields: ${missingFields.join(', ')}`);
+    }
+    
+    if (formData.subcategories.length === 0) {
+      throw new Error('Please select at least one subcategory');
+    }
+    
+    if (formData.travelTags.length === 0) {
+      throw new Error('Please select at least one travel tag');
+    }
+
+    if (!defaultUserId) {
+      throw new Error('User initialization failed. Please refresh the page.');
+    }
+  };
 
   const handleSubmit = async (status: 'draft' | 'published') => {
     try {
       setIsSubmitting(true);
       setError(null);
 
-      // Get current user (temporary - replace with proper auth)
-      const currentUser = await userService.getCurrentUser();
-      if (!currentUser) {
-        throw new Error('User not authenticated');
-      }
+      // Validate form
+      validateForm();
 
-      const blogData = {
-        ...formData,
+      // Ensure arrays are properly formatted and not undefined
+      const subcategories = formData.subcategories?.length ? formData.subcategories : [];
+      const travelTags = formData.travelTags?.length ? formData.travelTags : [];
+
+      // Prepare blog data with all required fields
+      const blogData: CreateBlogData = {
+        title: formData.title.trim(),
+        subtitle: formData.subtitle.trim(),
+        summary: formData.summary.trim(),
+        content: formData.content.trim(),
+        category: formData.category.trim(),
+        subcategories,
+        travelTags,
         status,
-        author: currentUser._id
+        author: defaultUserId!
       };
+
+      // Log the data being sent (for debugging)
+      console.log('Using default user ID:', defaultUserId);
+      console.log('Submitting blog data:', JSON.stringify(blogData, null, 2));
+      console.log('Uploading images:', images.map(img => ({ name: img.name, type: img.type, size: img.size })));
 
       await blogService.createBlog(blogData, images);
       navigate('/blogs');
     } catch (err) {
+      console.error('Form submission error:', err);
       setError(err instanceof Error ? err.message : 'Failed to create blog');
     } finally {
       setIsSubmitting(false);
@@ -96,13 +181,14 @@ export const BlogForm = () => {
 
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr_max-content_1fr] gap-x-8 gap-y-4 items-center">
-            <label className={labelClasses}>Blog Title :</label>
+            <label className={labelClasses}>Blog Title* :</label>
             <Input
               type="text"
               placeholder="Enter the title of your blog post"
               className={inputBaseClasses}
               value={formData.title}
               onChange={(e) => handleInputChange('title', e.target.value)}
+              required
             />
             <label className={labelClasses}>Publication Date:</label>
             <Input
@@ -113,11 +199,23 @@ export const BlogForm = () => {
             />
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr] gap-x-8 gap-y-4 items-center">
+            <label className={labelClasses}>Subtitle* :</label>
+            <Input
+              type="text"
+              placeholder="Enter a subtitle for your blog post"
+              className={inputBaseClasses}
+              value={formData.subtitle}
+              onChange={(e) => handleInputChange('subtitle', e.target.value)}
+              required
+            />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr_max-content_1fr] gap-x-8 gap-y-4 items-center">
-            <label className={labelClasses}>Category :</label>
+            <label className={labelClasses}>Category* :</label>
             <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
               <SelectTrigger className={selectClasses}>
-                <SelectValue placeholder="-Select other options-" />
+                <SelectValue placeholder="-Select category-" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="travel">Travel</SelectItem>
@@ -125,10 +223,16 @@ export const BlogForm = () => {
                 <SelectItem value="food">Food</SelectItem>
               </SelectContent>
             </Select>
-            <label className={labelClasses}>Sub-category :</label>
-            <Select value={formData.subcategories[0]} onValueChange={(value) => handleInputChange('subcategories', [value])}>
+            <label className={labelClasses}>Sub-category* :</label>
+            <Select 
+              value={formData.subcategories[0]} 
+              onValueChange={(value) => {
+                const newSubcategories = value ? [value] : [];
+                handleInputChange('subcategories', newSubcategories);
+              }}
+            >
               <SelectTrigger className={selectClasses}>
-                <SelectValue placeholder="-Select multiple options-" />
+                <SelectValue placeholder="-Select subcategory-" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="hiking">Hiking</SelectItem>
@@ -139,17 +243,24 @@ export const BlogForm = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr_max-content_1fr] gap-x-8 gap-y-4 items-start">
-            <label className={`${labelClasses} pt-2`}>Summary :</label>
+            <label className={`${labelClasses} pt-2`}>Summary* :</label>
             <textarea
-              placeholder="Type here"
+              placeholder="Type a brief summary"
               className={`${inputBaseClasses} min-h-[100px] p-3 resize-none`}
               value={formData.summary}
               onChange={(e) => handleInputChange('summary', e.target.value)}
+              required
             />
-            <label className={labelClasses}>Travel tags:</label>
-            <Select value={formData.travelTags[0]} onValueChange={(value) => handleInputChange('travelTags', [value])}>
+            <label className={labelClasses}>Travel tags* :</label>
+            <Select 
+              value={formData.travelTags[0]} 
+              onValueChange={(value) => {
+                const newTags = value ? [value] : [];
+                handleInputChange('travelTags', newTags);
+              }}
+            >
               <SelectTrigger className={selectClasses}>
-                <SelectValue placeholder="-Select other options-" />
+                <SelectValue placeholder="-Select tags-" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="alps">Alps</SelectItem>
@@ -160,12 +271,13 @@ export const BlogForm = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr] gap-x-8 gap-y-2 items-start">
-            <label className={`${labelClasses} pt-2`}>Main Content</label>
+            <label className={`${labelClasses} pt-2`}>Main Content* :</label>
             <textarea
               placeholder="Write your blog content here"
               className={`${inputBaseClasses} min-h-[150px] p-3 resize-none w-full`}
               value={formData.content}
               onChange={(e) => handleInputChange('content', e.target.value)}
+              required
             />
           </div>
 
@@ -202,7 +314,7 @@ export const BlogForm = () => {
                 onClick={() => handleSubmit('draft')}
                 disabled={isSubmitting}
               >
-                Save Draft
+                {isSubmitting ? 'Saving...' : 'Save Draft'}
               </Button>
               <Button 
                 className="bg-[#d2ecf4] text-black text-lg sm:text-xl px-10 py-2 rounded-full hover:bg-[#c4e5ef] transition-colors min-w-[150px] border border-gray-300"
@@ -218,7 +330,7 @@ export const BlogForm = () => {
               onClick={() => handleSubmit('published')}
               disabled={isSubmitting}
             >
-              Publish
+              {isSubmitting ? 'Publishing...' : 'Publish'}
             </Button>
           </div>
 

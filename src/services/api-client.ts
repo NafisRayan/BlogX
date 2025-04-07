@@ -1,4 +1,8 @@
 import axios from 'axios';
+import { handleApiError, shouldRetryRequest } from '../utils/error-handler';
+
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
 
 const apiClient = axios.create({
   baseURL: 'http://localhost:5000/api',
@@ -7,12 +11,39 @@ const apiClient = axios.create({
   }
 });
 
-// Add response interceptor to unwrap data and handle errors consistently
+// Add request interceptor for authentication
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Add response interceptor for error handling and retries
 apiClient.interceptors.response.use(
   (response) => response.data,
-  (error) => {
-    const message = error.response?.data?.error || 'An unexpected error occurred';
-    return Promise.reject(new Error(message));
+  async (error) => {
+    const config = error.config;
+
+    // Initialize retry count
+    config.retryCount = config.retryCount ?? 0;
+
+    // Check if we should retry the request
+    if (config.retryCount < MAX_RETRIES && shouldRetryRequest(error)) {
+      config.retryCount += 1;
+
+      // Delay before retrying
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * config.retryCount));
+
+      // Retry the request
+      return apiClient(config);
+    }
+
+    return Promise.reject(handleApiError(error));
   }
 );
 
