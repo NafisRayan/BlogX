@@ -29,6 +29,8 @@ A modern, full-stack blog platform built with React and TypeScript, featuring a 
 - Express.js
 - MongoDB
 - Cloudinary (for image management)
+- Multer (for file uploads)
+- Express Validator (for request validation)
 
 ## 📦 Installation
 
@@ -43,40 +45,36 @@ cd BlogX
 # Install frontend dependencies
 npm install
 
-# Install backend dependencies (Backend Not Ready Yet)
-cd api
+# Install backend dependencies
+cd backend
 npm install
 ```
 
-3. Set up environment variables: (Currently not applicable)
+3. Set up environment variables:
 
-Create `.env` files in both root and api directories with necessary configurations.
-
-4. Start the development servers:
-```bash
-# Start frontend
-npm run dev
-
-# Start backend in api directory (Backend Not Ready Yet)
-npm run dev
-```
-
-## 🔧 Configuration
-
-The application requires several environment variables to be set up:
+Create `.env` files in both root and backend directories.
 
 ### Frontend (.env)
 ```env
-VITE_API_URL=your_api_url
+VITE_API_URL=http://localhost:5000
 ```
 
-### Backend (api/.env) (Backend Not Ready Yet)
+### Backend (.env)
 ```env
-PORT=backend_port
+PORT=5000
 MONGODB_URI=your_mongodb_uri
 CLOUDINARY_CLOUD_NAME=your_cloudinary_name
 CLOUDINARY_API_KEY=your_cloudinary_key
 CLOUDINARY_API_SECRET=your_cloudinary_secret
+```
+
+4. Start the development servers:
+```bash
+# Start frontend (in root directory)
+npm run dev
+
+# Start backend (in backend directory)
+npm run dev
 ```
 
 ## 🌐 Project Structure
@@ -86,24 +84,24 @@ blogx/
 ├── src/                    # Frontend source files
 │   ├── components/        # Reusable UI components
 │   ├── screens/          # Page components
-│   ├── services/         # API services
+│   ├── hooks/            # Custom React hooks
 │   └── lib/             # Utility functions
-├── api/                  # Backend source files
+├── backend/              # Backend source files
 │   ├── src/
 │   │   ├── config/      # Configuration files
 │   │   ├── controllers/ # Route controllers
 │   │   ├── models/      # Database models
 │   │   ├── routes/      # API routes
-│   │   └── types/       # TypeScript types
-│   └── index.ts         # Entry point
-└── public/              # Static assets
+│   │   └── server.js    # Entry point
+├── public/              # Static assets
+└── vite.config.ts       # Vite configuration
 ```
 
 ## 📱 Features Overview
 
 1. **Blog Posts Management**
    - Create new blog posts with rich text content
-   - Upload and manage images
+   - Upload and manage images through Cloudinary
    - Edit existing posts
    - Delete posts
 
@@ -113,14 +111,22 @@ blogx/
    - Smooth animations and transitions
    - Intuitive navigation
 
-3. **Search & Filter**
-   - Filter posts by category
-   - Search functionality
-   - Sort by date, popularity, etc.
+3. **Backend Features**
+   - RESTful API endpoints
+   - MongoDB database integration
+   - File upload handling with Multer
+   - Request validation with Express Validator
+   - CORS enabled for frontend communication
 
-4. **Pagination**
-   - Efficient loading of blog posts
-   - Smooth navigation between pages
+## 🔧 Scripts
+
+### Frontend
+- `npm run dev`: Start development server
+- `npm run build`: Build for production
+
+### Backend
+- `npm run dev`: Start development server with Nodemon
+- `npm start`: Start production server
 
 ## 👨‍💻 Author
 
