@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import {
@@ -13,18 +13,37 @@ import { BlogCardSection } from "./sections/BlogCardSection";
 import { BlogContainerSection } from "./sections/BlogContainerSection";
 import { BlogHeaderSection } from "./sections/BlogHeaderSection";
 import { BlogPostSection } from "./sections/BlogPostSection";
-import { BlogPaginationSection } from "./sections/BlogPaginationSection"; // Import the new component
+import { BlogPaginationSection } from "./sections/BlogPaginationSection";
+import { blogApi, Blog } from "../../lib/api";
+import { toast } from "react-hot-toast";
 
 export const BlogsPage = (): JSX.Element => {
   const navigate = useNavigate();
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Pagination data
-  const paginationItems = [
-    { page: 1, active: true },
-    { page: 2, active: false },
-    { page: 3, active: false },
-    { page: 36, active: false },
-  ];
+  useEffect(() => {
+    fetchBlogs();
+  }, [currentPage]);
+
+  const fetchBlogs = async () => {
+    try {
+      setIsLoading(true);
+      const response = await blogApi.getBlogs(currentPage);
+      setBlogs(response.blogs);
+      setTotalPages(response.totalPages);
+    } catch (error) {
+      toast.error('Failed to fetch blogs');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <main className="bg-[#e0f7fa] flex flex-row justify-center w-full min-h-screen">
@@ -36,12 +55,10 @@ export const BlogsPage = (): JSX.Element => {
         <BlogContainerSection />
 
         {/* Blog Post Section */}
-        <BlogPostSection />
+        <BlogPostSection blogs={blogs} isLoading={isLoading} />
 
         {/* Blog Card Section */}
-        <BlogCardSection />
-
-        {/* Removed incorrect BlogPaginationSection usage */}
+        <BlogCardSection blogs={blogs} isLoading={isLoading} />
 
         {/* Post Blog Button and Pagination */}
         {/* Responsive margins, flex-wrap for small screens */}
@@ -53,8 +70,11 @@ export const BlogsPage = (): JSX.Element => {
             Post your blog {/* Removed span and specific font family */}
           </Button>
 
-          {/* Use the new BlogPaginationSection component */}
-          <BlogPaginationSection paginationItems={paginationItems} />
+          <BlogPaginationSection
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
 
         </div>
       </div>

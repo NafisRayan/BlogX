@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import { BlogsPage } from "./screens/BlogsPage/BlogsPage";
 import { BlogForm } from "./screens/BlogForm/BlogForm"; // Changed to named import
 
@@ -17,6 +18,7 @@ const App = () => {
           {/* Default route */}
           <Route path="/" element={<BlogsPage />} />
         </Routes>
+        <Toaster position="top-right" />
       </BrowserRouter>
     </StrictMode>
   );
