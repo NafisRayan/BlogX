@@ -130,7 +130,7 @@ export const BlogForm = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="travel">Travel</SelectItem>
-                <SelectItem value="tech">Technology</SelectItem>
+                <SelectItem value="technology">Technology</SelectItem>
                 <SelectItem value="food">Food</SelectItem>
               </SelectContent>
             </Select>

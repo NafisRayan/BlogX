@@ -9,13 +9,20 @@ import {
   PaginationLink,
   // Removed direct Pagination imports, they are now in BlogPaginationSection
 } from "../../components/ui/pagination";
-import { BlogCardSection } from "./sections/BlogCardSection";
-import { BlogContainerSection } from "./sections/BlogContainerSection";
+import { BlogContainerSection } from "./sections/BlogContainerSection/BlogContainerSection";
 import { BlogHeaderSection } from "./sections/BlogHeaderSection";
 import { BlogPostSection } from "./sections/BlogPostSection";
 import { BlogPaginationSection } from "./sections/BlogPaginationSection";
 import { blogApi, Blog } from "../../lib/api";
 import { toast } from "react-hot-toast";
+
+// Filter state interface
+export interface FilterState {
+  destination: string;
+  category: string;
+  subCategory: string;
+  sortBy: string;
+}
 
 export const BlogsPage = (): JSX.Element => {
   const navigate = useNavigate();
@@ -23,17 +30,113 @@ export const BlogsPage = (): JSX.Element => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [filters, setFilters] = useState<FilterState>({
+    destination: "",
+    category: "",
+    subCategory: "",
+    sortBy: "newest"
+  });
 
   useEffect(() => {
     fetchBlogs();
-  }, [currentPage]);
+  }, [currentPage, filters]);
 
   const fetchBlogs = async () => {
     try {
       setIsLoading(true);
+      // In a real implementation, we would pass filters to the API
       const response = await blogApi.getBlogs(currentPage);
-      setBlogs(response.blogs);
-      setTotalPages(response.totalPages);
+      
+      // Filter and sort blogs client-side for demo purposes
+      let filteredBlogs = [...response.blogs];
+      
+      // Apply destination filter
+      if (filters.destination) {
+        // This is just for demonstration - in a real app you'd have destination data
+        filteredBlogs = filteredBlogs.filter(blog => 
+          blog.category.toLowerCase().includes(filters.destination) || 
+          blog.subCategory.toLowerCase().includes(filters.destination)
+        );
+      }
+      
+      // Apply category filter
+      if (filters.category) {
+        filteredBlogs = filteredBlogs.filter(blog => {
+          const blogCategory = blog.category.toLowerCase();
+          const selectedCategory = filters.category.toLowerCase();
+          
+          // Handle different variations of technology (tech/technology)
+          if (selectedCategory === 'technology' && (blogCategory === 'technology' || blogCategory === 'tech')) {
+            return true;
+          }
+          
+          // Handle different variations of food categories
+          if (selectedCategory === 'food' && (blogCategory === 'food' || blogCategory === 'cuisine' || blogCategory === 'cooking')) {
+            return true;
+          }
+          
+          // Direct match for travel
+          if (selectedCategory === 'travel' && blogCategory === 'travel') {
+            return true;
+          }
+          
+          return false;
+        });
+      }
+      
+      // Apply subcategory filter
+      if (filters.subCategory) {
+        filteredBlogs = filteredBlogs.filter(blog => {
+          const blogSubCategory = blog.subCategory.toLowerCase();
+          const selectedSubCategory = filters.subCategory.toLowerCase();
+          
+          // Handle variations of web development
+          if (selectedSubCategory === 'webdev' && 
+              (blogSubCategory === 'webdev' || 
+               blogSubCategory === 'web development' || 
+               blogSubCategory === 'web dev' || 
+               blogSubCategory === 'development')) {
+            return true;
+          }
+          
+          // Handle variations of recipes
+          if (selectedSubCategory === 'recipes' && 
+              (blogSubCategory === 'recipes' || 
+               blogSubCategory === 'recipe' || 
+               blogSubCategory === 'cooking')) {
+            return true;
+          }
+          
+          // Direct match for hiking
+          if (selectedSubCategory === 'hiking' && blogSubCategory === 'hiking') {
+            return true;
+          }
+          
+          return false;
+        });
+      }
+      
+      // Apply sorting
+      if (filters.sortBy) {
+        filteredBlogs.sort((a, b) => {
+          switch (filters.sortBy) {
+            case 'newest':
+              return new Date(b.publicationDate).getTime() - new Date(a.publicationDate).getTime();
+            case 'oldest':
+              return new Date(a.publicationDate).getTime() - new Date(b.publicationDate).getTime();
+            case 'a-z':
+              return a.title.localeCompare(b.title);
+            case 'z-a':
+              return b.title.localeCompare(a.title);
+            default:
+              return 0;
+          }
+        });
+      }
+      
+      setBlogs(filteredBlogs);
+      // Update total pages based on filtered results
+      setTotalPages(Math.ceil(filteredBlogs.length / 10) || 1);
     } catch (error) {
       toast.error('Failed to fetch blogs');
     } finally {
@@ -44,6 +147,11 @@ export const BlogsPage = (): JSX.Element => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+  
+  const handleFilterChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
+    setCurrentPage(1); // Reset to first page when filters change
+  };
 
   return (
     <main className="bg-[#e0f7fa] flex flex-row justify-center w-full min-h-screen">
@@ -52,13 +160,13 @@ export const BlogsPage = (): JSX.Element => {
         <BlogHeaderSection />
 
         {/* Blog Container Section */}
-        <BlogContainerSection />
+        <BlogContainerSection 
+          filters={filters}
+          onFilterChange={handleFilterChange}
+        />
 
         {/* Blog Post Section */}
         <BlogPostSection blogs={blogs} isLoading={isLoading} />
-
-        {/* Blog Card Section */}
-        <BlogCardSection blogs={blogs} isLoading={isLoading} />
 
         {/* Post Blog Button and Pagination */}
         {/* Responsive margins, flex-wrap for small screens */}
