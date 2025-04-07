@@ -16,6 +16,7 @@ export const BlogForm = () => {
     authorName: "",
     title: "",
     publicationDate: "",
+    destination: "",
     category: "",
     subCategory: "",
     summary: "",
@@ -135,6 +136,25 @@ export const BlogForm = () => {
               required
               className={inputBaseClasses}
             />
+          </div>
+
+          {/* Destination */}
+          <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr] gap-x-8 gap-y-4 items-center">
+            <label className={labelClasses}>Destination:</label>
+            <Select onValueChange={(value) => handleSelectChange('destination', value)} required>
+              <SelectTrigger className={selectClasses}>
+                <SelectValue placeholder="Select a continent" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="europe">Europe</SelectItem>
+                <SelectItem value="asia">Asia</SelectItem>
+                <SelectItem value="north-america">North America</SelectItem>
+                <SelectItem value="south-america">South America</SelectItem>
+                <SelectItem value="africa">Africa</SelectItem>
+                <SelectItem value="australia">Australia</SelectItem>
+                <SelectItem value="antarctica">Antarctica</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Category & Sub-category */}

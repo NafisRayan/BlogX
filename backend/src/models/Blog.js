@@ -13,6 +13,11 @@ const blogSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  destination: {
+    type: String,
+    required: true,
+    enum: ['europe', 'asia', 'north-america', 'south-america', 'africa', 'australia', 'antarctica']
+  },
   category: {
     type: String,
     required: true

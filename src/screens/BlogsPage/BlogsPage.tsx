@@ -44,25 +44,31 @@ export const BlogsPage = (): JSX.Element => {
   const fetchBlogs = async () => {
     try {
       setIsLoading(true);
-      // In a real implementation, we would pass filters to the API
+      console.log('Fetching blogs with filters:', filters);
       const response = await blogApi.getBlogs(currentPage);
+      console.log('API Response:', response);
       
       // Filter and sort blogs client-side for demo purposes
       let filteredBlogs = [...response.blogs];
+      console.log('Initial blogs:', filteredBlogs);
       
       // Apply destination filter
       if (filters.destination) {
-        // This is just for demonstration - in a real app you'd have destination data
-        filteredBlogs = filteredBlogs.filter(blog => 
-          blog.category.toLowerCase().includes(filters.destination) || 
-          blog.subCategory.toLowerCase().includes(filters.destination)
-        );
+        console.log('Applying destination filter:', filters.destination);
+        filteredBlogs = filteredBlogs.filter(blog => {
+          // Safely handle undefined or missing destination
+          const blogDestination = blog?.destination || '';
+          const filterDestination = filters.destination.toLowerCase();
+          console.log('Checking blog:', blog._id, 'destination:', blogDestination);
+          return blogDestination.toLowerCase() === filterDestination;
+        });
+        console.log('Filtered blogs by destination:', filteredBlogs);
       }
       
       // Apply category filter
       if (filters.category) {
         filteredBlogs = filteredBlogs.filter(blog => {
-          const blogCategory = blog.category.toLowerCase();
+          const blogCategory = blog.category?.toLowerCase() || '';
           const selectedCategory = filters.category.toLowerCase();
           
           // Handle different variations of technology (tech/technology)
@@ -87,7 +93,7 @@ export const BlogsPage = (): JSX.Element => {
       // Apply subcategory filter
       if (filters.subCategory) {
         filteredBlogs = filteredBlogs.filter(blog => {
-          const blogSubCategory = blog.subCategory.toLowerCase();
+          const blogSubCategory = blog.subCategory?.toLowerCase() || '';
           const selectedSubCategory = filters.subCategory.toLowerCase();
           
           // Handle variations of web development
@@ -121,9 +127,21 @@ export const BlogsPage = (): JSX.Element => {
         filteredBlogs.sort((a, b) => {
           switch (filters.sortBy) {
             case 'newest':
-              return new Date(b.publicationDate).getTime() - new Date(a.publicationDate).getTime();
+              const dateA = typeof a.publicationDate === 'string' ? 
+                new Date(a.publicationDate) : 
+                new Date(parseInt(a.publicationDate.$date.$numberLong));
+              const dateB = typeof b.publicationDate === 'string' ? 
+                new Date(b.publicationDate) : 
+                new Date(parseInt(b.publicationDate.$date.$numberLong));
+              return dateB.getTime() - dateA.getTime();
             case 'oldest':
-              return new Date(a.publicationDate).getTime() - new Date(b.publicationDate).getTime();
+              const dateC = typeof a.publicationDate === 'string' ? 
+                new Date(a.publicationDate) : 
+                new Date(parseInt(a.publicationDate.$date.$numberLong));
+              const dateD = typeof b.publicationDate === 'string' ? 
+                new Date(b.publicationDate) : 
+                new Date(parseInt(b.publicationDate.$date.$numberLong));
+              return dateC.getTime() - dateD.getTime();
             case 'a-z':
               return a.title.localeCompare(b.title);
             case 'z-a':
@@ -138,7 +156,11 @@ export const BlogsPage = (): JSX.Element => {
       // Update total pages based on filtered results
       setTotalPages(Math.ceil(filteredBlogs.length / 10) || 1);
     } catch (error) {
-      toast.error('Failed to fetch blogs');
+      console.error('Error fetching blogs:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to fetch blogs');
+      // Set empty state rather than keeping stale data
+      setBlogs([]);
+      setTotalPages(1);
     } finally {
       setIsLoading(false);
     }
