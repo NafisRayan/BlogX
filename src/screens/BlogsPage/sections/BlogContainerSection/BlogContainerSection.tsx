@@ -127,7 +127,7 @@ export const BlogContainerSection = ({ filters, onFilterChange }: BlogContainerS
           >
             <SelectTrigger
               // Responsive height, padding, text size. Removed fixed width and font family. Added flex-1 for distribution.
-              className="h-10 sm:h-11 bg-[#d2ecf4] border border-[#7099c8] text-[#003b95] text-base sm:text-lg font-normal rounded-[5px] flex justify-between items-center px-3 sm:px-4 flex-1 min-w-[120px]" // Added min-width
+              className="h-10 sm:h-11 bg-[#d2ecf4] border border-[#7099c8] text-[#003b95] text-base sm:text-lg font-normal rounded-[5px] flex justify-between items-center px-3 sm:px-4 flex-1 min-w-[175px]" // Added min-width
             >
               <SelectValue placeholder={option.name} />
               {/* Kept icon for now, adjusted size */}

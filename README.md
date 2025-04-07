@@ -102,8 +102,6 @@ blogx/
 1. **Blog Posts Management**
    - Create new blog posts with rich text content
    - Upload and manage images through Cloudinary
-   - Edit existing posts
-   - Delete posts
 
 2. **User Interface**
    - Responsive design for all screen sizes
