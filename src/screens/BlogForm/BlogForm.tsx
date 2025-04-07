@@ -10,6 +10,8 @@ export const BlogForm = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     authorName: "",
     title: "",
@@ -32,8 +34,24 @@ export const BlogForm = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      // Handle file selection
+      const filesArray = Array.from(e.target.files);
+      setSelectedImages(prev => [...prev, ...filesArray]);
+      
+      // Create preview URLs for the selected images
+      const newPreviewUrls = filesArray.map(file => URL.createObjectURL(file));
+      setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
     }
+  };
+
+  const removeImage = (index: number) => {
+    // Remove the image from the selected images array
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
+    
+    // Revoke the object URL to avoid memory leaks
+    URL.revokeObjectURL(previewUrls[index]);
+    
+    // Remove the preview URL from the array
+    setPreviewUrls(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,12 +70,10 @@ export const BlogForm = () => {
         }
       });
 
-      // Append files if any
-      if (fileInputRef.current?.files) {
-        Array.from(fileInputRef.current.files).forEach(file => {
-          formDataToSend.append('images', file);
-        });
-      }
+      // Append selected images
+      selectedImages.forEach(file => {
+        formDataToSend.append('images', file);
+      });
 
       await blogApi.createBlog(formDataToSend);
       toast.success('Blog created successfully!');
@@ -187,21 +203,54 @@ export const BlogForm = () => {
           </div>
 
           {/* Images Upload */}
-          <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr] gap-x-8 gap-y-2 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr] gap-x-8 gap-y-2 items-start">
             <label className={labelClasses}>Images Upload :</label>
-            <div 
-              className="border-2 border-dashed border-[#a0cde3] rounded-lg bg-[#d2ecf4] p-6 text-center text-gray-500 cursor-pointer hover:bg-[#c4e5ef] transition-colors w-full h-24 flex items-center justify-center"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              Drop files to upload
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                multiple
-                accept="image/*"
-                className="hidden"
-              />
+            <div className="flex flex-col gap-4">
+              <div 
+                className="border-2 border-dashed border-[#a0cde3] rounded-lg bg-[#d2ecf4] p-6 text-center text-gray-500 cursor-pointer hover:bg-[#c4e5ef] transition-colors w-full h-24 flex items-center justify-center"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <div className="flex flex-col items-center">
+                  <span className="text-lg font-medium">Drop files to upload or click to browse</span>
+                  <span className="text-sm mt-1">{selectedImages.length > 0 ? `${selectedImages.length} file(s) selected` : 'No files selected'}</span>
+                </div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  multiple
+                  accept="image/*"
+                  className="hidden"
+                />
+              </div>
+
+              {/* Preview selected images */}
+              {previewUrls.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-2">
+                  {previewUrls.map((url, index) => (
+                    <div key={index} className="relative group">
+                      <img 
+                        src={url} 
+                        alt={`Selected image ${index + 1}`} 
+                        className="w-full h-24 object-cover rounded-lg border border-gray-300"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label="Remove image"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                      <span className="text-xs text-gray-500 mt-1 block truncate">
+                        {selectedImages[index]?.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
