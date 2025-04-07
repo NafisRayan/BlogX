@@ -108,7 +108,8 @@ blogx/
    - Modern and clean UI components
    - Smooth animations and transitions
    - Intuitive navigation
-
+   - Optimised for performance
+   
 3. **Backend Features**
    - RESTful API endpoints
    - MongoDB database integration

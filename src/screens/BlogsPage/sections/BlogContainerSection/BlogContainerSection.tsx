@@ -149,7 +149,7 @@ export const BlogContainerSection = ({ filters, onFilterChange }: BlogContainerS
         {/* Sort by dropdown */}
         <Select value={localFilters.sortBy} onValueChange={handleSortChange}>
           <SelectTrigger
-            className="flex items-center justify-between gap-2 flex-1 h-10 sm:h-11 bg-[#d9f2f7] border border-[#a8c8e1] rounded-[5px] text-base sm:text-lg font-normal text-black px-3 sm:px-4 min-w-[100px]" // Added min-width
+            className="flex items-center justify-between gap-2 flex-1 h-10 sm:h-11 bg-[#d9f2f7] border border-[#a8c8e1] rounded-[5px] text-base sm:text-lg font-normal text-black px-3 sm:px-4 min-w-[130px]" // Added min-width
           >
             <span>Sort by</span>
             <SlidersHorizontal className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
