@@ -22,6 +22,7 @@ export interface FilterState {
   category: string;
   subCategory: string;
   sortBy: string;
+  searchTerm?: string;
 }
 
 export const BlogsPage = (): JSX.Element => {
@@ -34,7 +35,8 @@ export const BlogsPage = (): JSX.Element => {
     destination: "",
     category: "",
     subCategory: "",
-    sortBy: "newest"
+    sortBy: "newest",
+    searchTerm: ""
   });
 
   useEffect(() => {
@@ -51,6 +53,19 @@ export const BlogsPage = (): JSX.Element => {
       // Filter and sort blogs client-side for demo purposes
       let filteredBlogs = [...response.blogs];
       console.log('Initial blogs:', filteredBlogs);
+      
+      // Apply search filter if searchTerm exists
+      if (filters.searchTerm) {
+        const searchTerm = filters.searchTerm.toLowerCase();
+        filteredBlogs = filteredBlogs.filter(blog => {
+          return (
+            blog.title?.toLowerCase().includes(searchTerm) ||
+            blog.authorName?.toLowerCase().includes(searchTerm) ||
+            blog.destination?.toLowerCase().includes(searchTerm) ||
+            blog.category?.toLowerCase().includes(searchTerm)
+          );
+        });
+      }
       
       // Apply destination filter
       if (filters.destination) {
@@ -175,11 +190,16 @@ export const BlogsPage = (): JSX.Element => {
     setCurrentPage(1); // Reset to first page when filters change
   };
 
+  const handleSearch = (searchTerm: string) => {
+    setFilters(prev => ({ ...prev, searchTerm }));
+    setCurrentPage(1); // Reset to first page when search changes
+  };
+
   return (
     <main className="bg-[#e0f7fa] flex flex-row justify-center w-full min-h-screen">
       <div className="w-full max-w-[1512px] relative pb-8"> {/* Removed redundant bg, Added padding-bottom */}
         {/* Blog Header Section */}
-        <BlogHeaderSection />
+        <BlogHeaderSection onSearch={handleSearch} />
 
         {/* Blog Container Section */}
         <BlogContainerSection 
